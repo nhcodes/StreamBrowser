@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:key="category_browser"
+        app:title="Browser">
+
+        <SwitchPreference
+            app:defaultValue="false"
+            app:iconSpaceReserved="false"
+            app:key="preference_desktop_mode"
+            app:summary="Show pc desktop version of website?"
+            app:title="Desktop mode" />
+
+        <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
+            app:key="preference_block_redirects"
+            app:summary="Should redirects be blocked? Useful for blocking ads."
+            app:title="Block redirects" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        app:key="category_playback"
+        app:title="Playback">
+
+        <SeekBarPreference
+            android:max="90"
+            app:defaultValue="15"
+            app:iconSpaceReserved="false"
+            app:key="preference_skip_time"
+            app:min="5"
+            app:showSeekBarValue="true"
+            app:summary="How many seconds should be skipped forwards/backwards?"
+            app:title="Skip time" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

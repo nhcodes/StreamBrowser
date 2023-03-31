@@ -1,0 +1,67 @@
+<resources>
+
+    <style name="AppTheme.Splash" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/AppTheme</item>
+        <item name="windowSplashScreenBackground">?attr/colorSurface</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_foreground</item>
+        <!--<item name="windowSplashScreenAnimationDuration">200</item>-->
+    </style>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+
+        <item name="android:statusBarColor">?android:colorBackground</item>
+        <item name="android:navigationBarColor">?android:colorBackground</item>
+        <item name="android:colorBackground">?attr/colorSurface</item>
+
+        <item name="snackbarStyle">@style/AppTheme.Snackbar</item>
+        <item name="snackbarTextViewStyle">@style/AppTheme.Snackbar.Text</item>
+
+        <item name="colorPrimary">@color/deep_purple_200</item>
+        <item name="colorPrimaryVariant">@color/deep_purple_a200</item>
+
+        <item name="colorSecondary">@color/deep_purple_200</item>
+        <item name="colorSecondaryVariant">@color/deep_purple_a200</item>
+
+        <item name="colorSurface">@color/grey900</item>
+
+        <item name="castMiniControllerStyle">@style/AppTheme.CastMiniController</item>
+
+    </style>
+
+    <style name="AppTheme.CastMiniController" parent="CastMiniController">
+        <item name="castBackground">?attr/colorSurface</item>
+        <item name="castProgressBarColor">?attr/colorSecondary</item>
+    </style>
+
+    <style name="AppTheme.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <item name="elevation">48dp</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="shapeAppearance">@style/AppTheme.SnackbarShapeAppearance</item>
+    </style>
+
+    <style name="AppTheme.Snackbar.Text" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="AppTheme.CircleShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="AppTheme.RoundedShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10%</item>
+    </style>
+
+    <style name="AppTheme.BottomSheetShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
+    </style>
+
+    <style name="AppTheme.SnackbarShapeAppearance">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_stream_share"
+        android:icon="@drawable/icon_share"
+        android:title="@string/fragment_stream_info_action_share"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_stream_download"
+        android:icon="@drawable/icon_download"
+        android:title="@string/fragment_stream_info_action_download"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_stream_cast"
+        android:icon="@drawable/icon_cast"
+        android:title="@string/fragment_stream_info_action_cast"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_stream_play"
+        android:icon="@drawable/icon_play"
+        android:title="@string/fragment_stream_info_action_play"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_none"
+        android:visible="false" />
+
+</menu>

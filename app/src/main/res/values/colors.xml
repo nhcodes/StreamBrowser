@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="color_icon">?attr/colorControlNormal</color>
+
+    <color name="logo_foreground">#7C4DFF</color>
+    <color name="logo_background">#212121</color>
+
+    <color name="deep_purple_200">#B39DDB</color>
+    <color name="deep_purple_a200">#7C4DFF</color>
+
+    <color name="grey900">#212121</color>
+    <color name="grey50">#FAFAFA</color>
+
+</resources>
