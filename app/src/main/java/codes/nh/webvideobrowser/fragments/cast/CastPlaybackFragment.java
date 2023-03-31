@@ -9,9 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.media3.ui.PlayerControlView;
 
 import com.google.android.gms.cast.MediaMetadata;
 
+import codes.nh.webvideobrowser.CastMediaPlayer;
 import codes.nh.webvideobrowser.HomeActivity;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.settings.SettingsManager;
@@ -29,20 +31,23 @@ public class CastPlaybackFragment extends SheetFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        HomeActivity activity = (HomeActivity) requireActivity();
+        PlayerControlView playerControl = view.findViewById(R.id.fragment_cast_playback_player);
+        playerControl.setPlayer(CastMediaPlayer.player);
+
+        /*HomeActivity activity = (HomeActivity) requireActivity();
 
         SettingsManager settingsManager = new SettingsManager(getApplicationContext());
 
         CastUiController ui = new CastUiController(activity);
 
-        int skipTime = settingsManager.getSkipTime();
+        int skipTime = settingsManager.getSkipTime();*/
 
         /*ImageView thumbnailImage = view.findViewById(R.id.fragment_cast_playback_image_thumbnail);
         thumbnailImage.setImageResource(R.drawable.icon_stream_thumbnail);
         ImageHints imageHints = new ImageHints(ImagePicker.IMAGE_TYPE_UNKNOWN, 1920, 1080);
         ui.bindImageViewToImageOfCurrentItem(thumbnailImage, imageHints, R.drawable.placeholder); //TODO remove placeholder*/
 
-        TextView titleText = view.findViewById(R.id.fragment_cast_playback_text_title);
+        /*TextView titleText = view.findViewById(R.id.fragment_cast_playback_text_title);
         ui.bindTextViewToMetadataOfCurrentItem(titleText, MediaMetadata.KEY_TITLE);
         titleText.setSelected(true);
 
@@ -93,7 +98,7 @@ public class CastPlaybackFragment extends SheetFragment {
         ui.bindTextViewToStreamDuration(durationText);
 
         SeekBar progressBar = view.findViewById(R.id.fragment_cast_playback_seekbar_progress);
-        ui.bindSeekBar(progressBar);
+        ui.bindSeekBar(progressBar);*/
 
     }
 }

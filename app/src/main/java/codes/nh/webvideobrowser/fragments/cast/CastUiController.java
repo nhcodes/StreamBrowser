@@ -15,14 +15,14 @@ import codes.nh.webvideobrowser.R;
 
 public class CastUiController extends UIMediaController {
 
-    private final CastManager castManager;
+    //private final CastManager castManager;
 
     private final Drawable unMuteDrawable, muteDrawable;
 
     public CastUiController(HomeActivity activity) {
         super(activity);
 
-        castManager = ((App) activity.getApplication()).getCastManager();
+        //castManager = ((App) activity.getApplication()).getCastManager();
 
         unMuteDrawable = ContextCompat.getDrawable(activity, R.drawable.icon_control_unmute);
         muteDrawable = ContextCompat.getDrawable(activity, R.drawable.icon_control_mute);
@@ -31,26 +31,26 @@ public class CastUiController extends UIMediaController {
     @Override
     protected void onMuteToggleClicked(@NonNull ImageView imageView) {
         super.onMuteToggleClicked(imageView);
-        if (castManager.getCastSession().isMute()) {
+        /*if (castManager.getCastSession().isMute()) {
             imageView.setImageDrawable(unMuteDrawable);
         } else {
             imageView.setImageDrawable(muteDrawable);
-        }
+        }*/
     }
 
     @Override
     protected void onForwardClicked(@NonNull View view, long skipStepMs) {
-        boolean isLive = castManager.goToLive();
+        /*boolean isLive = castManager.goToLive();
         if (!isLive) {
             super.onForwardClicked(view, skipStepMs);
-        }
+        }*/
     }
 
     public void onStopClicked(ImageView imageView) {
-        castManager.stopStream();
+        //castManager.stopStream();
     }
 
     public void onDisconnectClicked(ImageView imageView) {
-        castManager.disconnect();
+        //castManager.disconnect();
     }
 }

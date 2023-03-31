@@ -97,7 +97,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private FloatingActionButton streamsButton;
 
-    private CastManager castManager;
+    //private CastManager castManager;
 
     private FilePicker filePicker;
 
@@ -146,9 +146,9 @@ public class HomeActivity extends AppCompatActivity {
 
         sheetManager = new SheetManager(this);
 
-        App app = (App) getApplication();
+        /*App app = (App) getApplication();
         castManager = app.getCastManager();
-        castManager.setListener(castListener);
+        castManager.setListener(castListener);*/
 
         mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
@@ -200,7 +200,7 @@ public class HomeActivity extends AppCompatActivity {
 
         getOnBackPressedDispatcher().addCallback(backPressedCallback);
 
-        castManager.startSessionListener();
+        //castManager.startSessionListener();
 
         filePicker = new FilePicker(this);
         filePicker.register(this::onPickFile);
@@ -212,11 +212,11 @@ public class HomeActivity extends AppCompatActivity {
 
         backPressedCallback.remove();
 
-        if (!castManager.isPlaying()) { //todo
+        /*if (!castManager.isPlaying()) { //todo
             ProxyService.stop(getApplicationContext());
         }
 
-        castManager.stopSessionListener();
+        castManager.stopSessionListener();*/
 
         super.onDestroy();
     }
@@ -225,7 +225,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        castManager.startPlaybackListener();
+        //castManager.startPlaybackListener();
     }
 
     @Override
@@ -329,7 +329,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void startStream(Stream stream) {
-        boolean connected = castManager.playStream(stream);
+        //boolean connected = castManager.playStream(stream);
+        boolean connected = new CastMediaPlayer().start(getApplicationContext(), stream);
         if (!connected) {
             mediaRouteButton.showDialog();
         }
@@ -409,7 +410,7 @@ public class HomeActivity extends AppCompatActivity {
         public void onSessionUpdate(CastManager.SessionStatus sessionStatus, Object... data) {
             //AppUtils.log("onSessionUpdate " + sessionStatus.name());
             if (sessionStatus == CastManager.SessionStatus.STARTED || sessionStatus == CastManager.SessionStatus.RESUMED) {
-                castManager.startPlaybackListener();
+                //castManager.startPlaybackListener();
             } else if (sessionStatus == CastManager.SessionStatus.ENDED) {
                 ProxyService.stop(getApplicationContext());
             }

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/fragment_cast_playback_image_thumbnail"
+            android:layout_width="160dp"
+            android:layout_height="90dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/placeholder"
+            app:shapeAppearance="@style/AppTheme.RoundedShapeAppearance" />
+    -->
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/fragment_cast_playback_text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        tools:text="Some title of some video lalala lululu hahaha" />
+
+    <TextView
+        android:id="@+id/fragment_cast_playback_text_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        tools:text="https://example.com/fjwe/fwnefiwfmiwrmgirgiwmfiwrgmweifmwie_gfiwrmgiwemgimwg/fwemgfiuwnegfiunefnw/?=fjwiefwe" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/fragment_cast_playback_text_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="00:00" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/fragment_cast_playback_text_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="00:00" />
+
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/fragment_cast_playback_seekbar_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp" />
+
+    <!--
+    <com.google.android.gms.cast.framework.media.widget.CastSeekBar
+        android:id="@+id/fragment_cast_playback_seekbar_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
+        android:paddingHorizontal="8dp" />
+        -->
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp">
+
+        <TableRow>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/fragment_cast_playback_button_subtitles"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Subtitles"
+                android:src="@drawable/icon_control_subtitle" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/fragment_cast_playback_button_mute"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Mute"
+                android:src="@drawable/icon_control_unmute" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/fragment_cast_playback_button_stop"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Stop"
+                android:src="@drawable/icon_control_stop" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/fragment_cast_playback_button_disconnect"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Disconnect"
+                android:src="@drawable/icon_control_disconnect" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/fragment_cast_playback_button_rewind"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Rewind"
+                android:src="@drawable/icon_control_rewind" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/fragment_cast_playback_button_play"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_centerInParent="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Play/Pause"
+                    android:src="@drawable/icon_control_play"
+                    app:tint="?attr/colorControlNormal" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/fragment_cast_playback_loader"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_centerInParent="true"
+                    android:indeterminate="true" />
+
+            </RelativeLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/fragment_cast_playback_button_forward"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Forward"
+                android:src="@drawable/icon_control_forward" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+        </TableRow>
+
+    </TableLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
