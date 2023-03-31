@@ -2,21 +2,16 @@ package codes.nh.webvideobrowser.fragments.cast;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.ui.PlayerControlView;
 
-import com.google.android.gms.cast.MediaMetadata;
-
-import codes.nh.webvideobrowser.CastMediaPlayer;
 import codes.nh.webvideobrowser.HomeActivity;
 import codes.nh.webvideobrowser.R;
-import codes.nh.webvideobrowser.fragments.settings.SettingsManager;
+import codes.nh.webvideobrowser.fragments.bookmark.BookmarkViewModel;
+import codes.nh.webvideobrowser.fragments.player.PlayerViewModel;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
@@ -31,8 +26,12 @@ public class CastPlaybackFragment extends SheetFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        PlayerViewModel playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
+
         PlayerControlView playerControl = view.findViewById(R.id.fragment_cast_playback_player);
-        playerControl.setPlayer(CastMediaPlayer.player);
+        playerControl.setPlayer(playerViewModel.getCastHandler().getCastPlayer());
+        playerControl.setShowSubtitleButton(true);
+        playerControl.setShowTimeoutMs(-1);
 
         /*HomeActivity activity = (HomeActivity) requireActivity();
 

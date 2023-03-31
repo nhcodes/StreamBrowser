@@ -1,6 +1,5 @@
 package codes.nh.webvideobrowser;
 
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
@@ -16,37 +15,27 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.mediarouter.app.MediaRouteButton;
 
-import com.google.android.gms.cast.MediaStatus;
-import com.google.android.gms.cast.framework.CastButtonFactory;
-import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import codes.nh.webvideobrowser.fragments.bookmark.BookmarksFragment;
 import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
-import codes.nh.webvideobrowser.fragments.cast.CastManager;
 import codes.nh.webvideobrowser.fragments.cast.CastPlaybackFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryViewModel;
+import codes.nh.webvideobrowser.fragments.player.PlayerViewModel;
 import codes.nh.webvideobrowser.fragments.settings.SettingsFragment;
 import codes.nh.webvideobrowser.fragments.sheet.SheetManager;
 import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.fragments.stream.StreamViewModel;
 import codes.nh.webvideobrowser.fragments.stream.StreamsFragment;
-import codes.nh.webvideobrowser.proxy.ProxyService;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.FilePicker;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
@@ -85,6 +74,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private MainViewModel mainViewModel;
 
+    private PlayerViewModel playerViewModel;
+
     private StreamViewModel streamViewModel;
 
     private SheetManager sheetManager;
@@ -93,7 +84,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private View rootView;
 
-    private MediaRouteButton mediaRouteButton;
+    //private MediaRouteButton mediaRouteButton;
 
     private FloatingActionButton streamsButton;
 
@@ -133,11 +124,13 @@ public class HomeActivity extends AppCompatActivity {
             snackbar.show();
         });
 
+        playerViewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
+
         streamViewModel = new ViewModelProvider(this).get(StreamViewModel.class);
         streamViewModel.getStreamRequest().observe(this, streamRequest -> {
             if (streamRequest != null) {
                 AppUtils.log("getStreamRequest");
-                playStream(streamRequest.getStream());
+                startStream(streamRequest.getStream());
                 streamViewModel.play(null);
             }
         });
@@ -150,9 +143,9 @@ public class HomeActivity extends AppCompatActivity {
         castManager = app.getCastManager();
         castManager.setListener(castListener);*/
 
-        mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
+        /*mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
-        mediaRouteButton.setClickable(false);
+        mediaRouteButton.setClickable(false);*/
 
         streamsButton = findViewById(R.id.activity_home_button_streams);
         streamsButton.setOnClickListener(new View.OnClickListener() {
@@ -287,6 +280,7 @@ public class HomeActivity extends AppCompatActivity {
 
     //stream
 
+    /*
     public void playStream(Stream stream) {
         historyViewModel.getHistory(stream.getStreamUrl(), historyList -> {
 
@@ -326,16 +320,15 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 })
                 .show();
-    }
+    }*/
 
     private void startStream(Stream stream) {
         //boolean connected = castManager.playStream(stream);
-        boolean connected = new CastMediaPlayer().start(getApplicationContext(), stream);
-        if (!connected) {
-            mediaRouteButton.showDialog();
-        }
+        playerViewModel.play(this, stream);
+        mainViewModel.showSnackbar(new SnackbarRequest("startStream"));
     }
 
+    /*
     private final CastManager.Listener castListener = new CastManager.Listener() {
 
         @Override
@@ -420,7 +413,7 @@ public class HomeActivity extends AppCompatActivity {
         public void onReceiveMessage(String message) {
             mainViewModel.showSnackbar(new SnackbarRequest("Received: " + message));
         }
-    };
+    };*/
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) { //clear edittext focus on click outside
@@ -457,6 +450,6 @@ public class HomeActivity extends AppCompatActivity {
                 0L
         );
         stream.setUseProxy(true);
-        playStream(stream);
+        startStream(stream);
     }
 }

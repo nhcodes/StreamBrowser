@@ -159,8 +159,19 @@ public class Stream {
             subtitles.add(subtitle);
         }
 
+        //todo improve
+        String url = streamUrl;
+        if (useProxy()) {
+            ProxyServer server = ProxyServer.getInstance(null); //todo
+            HashMap<String, String> newHeaders = new HashMap<>();
+            newHeaders.put("Referer", headers.get("Referer"));
+            newHeaders.put("Origin", headers.get("Origin"));
+            AppUtils.log("stream headers: " + AppUtils.mapToJson(newHeaders));
+            url = server.getProxyUrl(streamUrl) + server.getEncodedQuery(streamUrl, newHeaders);
+        }
+
         return new MediaItem.Builder()
-                .setUri(streamUrl)
+                .setUri(url)
                 .setMediaMetadata(metadata)
                 .setSubtitleConfigurations(subtitles)
                 .build();
