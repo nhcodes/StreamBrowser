@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.function.Consumer;
 
+//todo https://developer.android.com/training/basics/intents/result#separate
 public class FilePicker {
 
     private final AppCompatActivity activity;
