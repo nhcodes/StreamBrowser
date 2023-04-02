@@ -22,6 +22,7 @@ import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
@@ -243,15 +244,10 @@ public class HomeActivity extends AppCompatActivity {
 
     //streams available
 
-    private int[] buttonColors = null;
-
     private void updateStreamsAvailable(int count) {
-        if (buttonColors == null) {
-            TypedArray colors = obtainStyledAttributes(new int[]{R.attr.colorPrimary, R.attr.colorSurface});
-            buttonColors = new int[]{colors.getColor(0, -1), colors.getColor(1, -1)};
-            colors.recycle();
-        }
-        int color = count > 0 ? buttonColors[0] : buttonColors[1];
+        int primaryColor = MaterialColors.getColor(this, R.attr.colorPrimary, "colorPrimary missing");
+        int surfaceColor = MaterialColors.getColor(this, R.attr.colorSurface, "colorSurface missing");
+        int color = count > 0 ? primaryColor : surfaceColor;
         streamsButton.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
