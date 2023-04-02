@@ -19,6 +19,12 @@ public class PlayerViewModel extends AndroidViewModel {
         AppUtils.log("init PlayerViewModel");
 
         castHandler = new CastHandler(application);
+        castHandler.setListener(new CastHandler.Listener() {
+            @Override
+            public void on() {
+
+            }
+        });
     }
 
     // play
@@ -29,6 +35,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void play(Context context, Stream stream) {
+        setCurrentStream(stream);
         castHandler.start(context, stream);
     }
 

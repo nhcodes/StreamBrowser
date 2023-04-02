@@ -1,6 +1,7 @@
 package codes.nh.webvideobrowser.fragments.stream;
 
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
@@ -143,9 +144,17 @@ public class Stream {
     }
 
     public MediaItem createMediaItem() {
+        Bundle test = new Bundle();
+        test.putString("test", "kakaka");
+        test.putString("idk", "man");
+
+        Bundle test2 = new Bundle();
+        test.putString("hellow", "world");
+
         androidx.media3.common.MediaMetadata metadata = new androidx.media3.common.MediaMetadata.Builder()
                 .setTitle(title)
                 .setSubtitle(sourceUrl.replaceFirst("https?://", ""))
+                //.setExtras(test)
                 .build();
 
         List<MediaItem.SubtitleConfiguration> subtitles = new ArrayList<>();
@@ -172,7 +181,9 @@ public class Stream {
 
         return new MediaItem.Builder()
                 .setUri(url)
+                //.setRequestMetadata(new MediaItem.RequestMetadata.Builder().setExtras(test2).build())
                 .setMediaMetadata(metadata)
+                //.setTag("hahahahahahahhaahhaha")
                 .setSubtitleConfigurations(subtitles)
                 .build();
     }

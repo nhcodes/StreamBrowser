@@ -8,28 +8,36 @@ import androidx.media3.cast.SessionAvailabilityListener;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
-import androidx.media3.common.util.UnstableApi;
 import androidx.mediarouter.app.MediaRouteChooserDialog;
 
+import com.google.android.gms.cast.Cast;
 import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import codes.nh.webvideobrowser.fragments.settings.SettingsManager;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.proxy.ProxyService;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
-@UnstableApi
 public class CastHandler {
 
     private final CastContext castContext;
 
     private final CastPlayer castPlayer;
 
+    private Listener listener;
+
     public CastHandler(Context context) {
         this.castContext = CastContext.getSharedInstance(context);
-        this.castPlayer = new CastPlayer(castContext, new CastMediaItemConverter());
+
+        SettingsManager settingsManager = new SettingsManager(context);
+        int skipTime = settingsManager.getSkipTime() * 1000;
+
+        this.castPlayer = new CastPlayer(castContext, new CastMediaItemConverter(), skipTime, skipTime);
         initCastPlayer();
     }
 
@@ -55,7 +63,7 @@ public class CastHandler {
 
     private Stream streamQueue = null;
 
-    private Stream lastStream;
+    private String lastStreamUrl;
 
     public void start(Context context, Stream stream) {
         if (!castPlayer.isCastSessionAvailable()) {
@@ -64,18 +72,17 @@ public class CastHandler {
             return;
         }
 
-        //todo
-        Stream oldStream = lastStream;
-        lastStream = stream;
-        if (oldStream != null && oldStream.getStreamUrl().equalsIgnoreCase(stream.getStreamUrl()) && !stream.useProxy()) {
+        if (stream.getStreamUrl().equalsIgnoreCase(lastStreamUrl) && !stream.useProxy()) {
             stream.setUseProxy(true);
             ProxyService.start(context.getApplicationContext()); //todo improve
             Executors.newSingleThreadScheduledExecutor().schedule(() -> {
                 play(stream);
             }, 1, TimeUnit.SECONDS);
         } else {
+            lastStreamUrl = stream.getStreamUrl();
             play(stream);
         }
+
     }
 
     private void play(Stream stream) {
@@ -86,6 +93,7 @@ public class CastHandler {
         mediaSourceFactory.setDataSourceFactory(httpDataSourceFactory);*/
 
         MediaItem mediaItem = stream.createMediaItem();
+        AppUtils.log("kkkkkkk: " + mediaItem.localConfiguration.uri);
         castPlayer.setMediaItem(mediaItem);
 
         //castPlayer.setPlayWhenReady(true);
@@ -97,21 +105,62 @@ public class CastHandler {
         castPlayer.release();
     }
 
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    public interface Listener {
+        void on();
+    }
+
+    //message channel
+
+    private final String messageNamespace = "urn:x-cast:webvideobrowser";
+
+    private final Cast.MessageReceivedCallback messageCallback = (device, namespace, message) -> {
+        AppUtils.log("MessageReceivedCallback: " + message);
+
+        /*stream.setUseProxy(true);
+        ProxyService.start(context.getApplicationContext()); //todo improve
+        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+            play(stream);
+        }, 1, TimeUnit.SECONDS);*/
+    };
+
+    private void setMessageListener() throws IOException {
+        CastSession session = castContext.getSessionManager().getCurrentCastSession();
+        session.setMessageReceivedCallbacks(messageNamespace, messageCallback);
+    }
+
+    //session listener
+
     private final SessionAvailabilityListener sessionListener = new SessionAvailabilityListener() {
+
         @Override
         public void onCastSessionAvailable() {
             AppUtils.log("onCastSessionAvailable");
+
+            try {
+                setMessageListener();
+            } catch (IOException e) {
+                AppUtils.log("setMessageListener", e);
+            }
+
             if (streamQueue != null) {
                 play(streamQueue);
                 streamQueue = null;
             }
+
         }
 
         @Override
         public void onCastSessionUnavailable() {
             AppUtils.log("onCastSessionUnavailable");
         }
+
     };
+
+    //player listener
 
     private final Player.Listener playerListener = new Player.Listener() {
 

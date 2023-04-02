@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.media3.ui.PlayerControlView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/fragment_cast_playback_player"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/fragment_cast_playback_text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        tools:text="Some title of some video lalala lululu hahaha" />
+
+    <TextView
+        android:id="@+id/fragment_cast_playback_text_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:ellipsize="marquee"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        tools:text="https://example.com/fjwe/fwnefiwfmiwrmgirgiwmfiwrgmweifmwie_gfiwrmgiwemgimwg/fwemgfiuwnegfiunefnw/?=fjwiefwe" />
+
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/fragment_cast_playback_player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
