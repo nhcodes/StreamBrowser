@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.utils.ImageUtils;
 import codes.nh.webvideobrowser.utils.RecyclerAdapter;
-import codes.nh.webvideobrowser.utils.UrlUtils;
 
 public class BookmarksAdapter extends RecyclerAdapter<Bookmark> {
 
@@ -32,8 +31,9 @@ public class BookmarksAdapter extends RecyclerAdapter<Bookmark> {
 
         holder.urlText.setText(bookmark.getUrl());
 
-        String faviconUrl = UrlUtils.getFaviconUrl(bookmark.getUrl());
-        ImageUtils.setImageViewFromUrl(holder.faviconImage, faviconUrl, R.drawable.icon_bookmark, 0);
+        holder.faviconImage.setImageBitmap(ImageUtils.bitmapFromBytes(bookmark.getFavicon()));
+        //String faviconUrl = UrlUtils.getFaviconUrl(bookmark.getUrl());
+        //ImageUtils.setImageViewFromUrl(holder.faviconImage, faviconUrl, R.drawable.icon_bookmark, 0);
     }
 
     private static class Holder extends RecyclerView.ViewHolder {

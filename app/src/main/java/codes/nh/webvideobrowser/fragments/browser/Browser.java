@@ -1,6 +1,7 @@
 package codes.nh.webvideobrowser.fragments.browser;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.webkit.WebSettings;
@@ -110,6 +111,8 @@ public class Browser extends WebView {
         void onUpdateUrl(String url);
 
         void onUpdateTitle(String title);
+
+        void onUpdateFavicon(Bitmap favicon);
 
         void onUpdateProgress(int progress);
 

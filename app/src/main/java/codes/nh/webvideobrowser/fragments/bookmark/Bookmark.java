@@ -13,9 +13,12 @@ public class Bookmark {
 
     private String title;
 
-    public Bookmark(String url, String title) {
+    private final byte[] favicon;
+
+    public Bookmark(String url, String title, byte[] favicon) {
         this.url = url;
         this.title = title;
+        this.favicon = favicon;
     }
 
     public long getId() {
@@ -40,5 +43,9 @@ public class Bookmark {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public byte[] getFavicon() {
+        return favicon;
     }
 }

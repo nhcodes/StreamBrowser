@@ -1,5 +1,6 @@
 package codes.nh.webvideobrowser.fragments.browser;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,6 +25,7 @@ import codes.nh.webvideobrowser.MainViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
+import codes.nh.webvideobrowser.utils.ImageUtils;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
 import codes.nh.webvideobrowser.utils.UrlUtils;
 
@@ -108,13 +110,19 @@ public class BrowserFragment extends Fragment {
             public void onUpdateUrl(String url) {
                 urlInput.setText(url);
 
-                BrowserDestination destination = new BrowserDestination(url, webView.getTitle(), System.currentTimeMillis());
+                BrowserDestination destination = new BrowserDestination(url, webView.getTitle(), ImageUtils.bytesFromBitmap(webView.getFavicon()), System.currentTimeMillis());
                 addDestination(destination);
             }
 
             @Override
             public void onUpdateTitle(String title) {
-                BrowserDestination destination = new BrowserDestination(webView.getUrl(), title, System.currentTimeMillis());
+                BrowserDestination destination = new BrowserDestination(webView.getUrl(), title, ImageUtils.bytesFromBitmap(webView.getFavicon()), System.currentTimeMillis());
+                addDestination(destination);
+            }
+
+            @Override
+            public void onUpdateFavicon(Bitmap favicon) {
+                BrowserDestination destination = new BrowserDestination(webView.getUrl(), webView.getTitle(), ImageUtils.bytesFromBitmap(favicon), System.currentTimeMillis());
                 addDestination(destination);
             }
 
