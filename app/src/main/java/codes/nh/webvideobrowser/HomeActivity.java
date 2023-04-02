@@ -1,7 +1,6 @@
 package codes.nh.webvideobrowser;
 
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.color.MaterialColors;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
@@ -236,15 +236,19 @@ public class HomeActivity extends AppCompatActivity {
 
     //streams available
 
-    private int[] buttonColors = null;
+    //private int[] buttonColors = null;
 
     private void updateStreamsAvailable(int count) {
-        if (buttonColors == null) {
+        /*if (buttonColors == null) {
             TypedArray colors = obtainStyledAttributes(new int[]{R.attr.colorPrimary, R.attr.colorSurface});
             buttonColors = new int[]{colors.getColor(0, -1), colors.getColor(1, -1)};
             colors.recycle();
         }
         int color = count > 0 ? buttonColors[0] : buttonColors[1];
+        streamsButton.setBackgroundTintList(ColorStateList.valueOf(color));*/
+        int primaryColor = MaterialColors.getColor(this, R.attr.colorPrimary, "colorPrimary missing");
+        int surfaceColor = MaterialColors.getColor(this, R.attr.colorSurface, "colorSurface missing");
+        int color = count > 0 ? primaryColor : surfaceColor;
         streamsButton.setBackgroundTintList(ColorStateList.valueOf(color));
     }
 
