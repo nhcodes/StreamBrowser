@@ -96,6 +96,10 @@ public class Stream {
         this.useProxy = useProxy;
     }
 
+    private JSONObject getUrlAndHeadersJson() {
+        return new JSONObject(Map.of("url", streamUrl, "headers", new JSONObject(headers)));
+    }
+
     public MediaLoadRequestData createMediaLoadRequestData() {
         MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         metadata.putString(MediaMetadata.KEY_TITLE, title);
@@ -133,7 +137,7 @@ public class Stream {
         MediaInfo mediaInfo = new MediaInfo.Builder(url)
                 .setMetadata(metadata)
                 .setMediaTracks(subtitles)
-                .setCustomData(new JSONObject(Map.of("url", streamUrl)))
+                .setCustomData(getUrlAndHeadersJson())
                 .build();
 
         return new MediaLoadRequestData.Builder()
@@ -159,8 +163,19 @@ public class Stream {
             subtitles.add(subtitle);
         }
 
+        //todo improve
+        String url = streamUrl;
+        if (useProxy()) {
+            ProxyServer server = ProxyServer.getInstance(null); //todo
+            HashMap<String, String> newHeaders = new HashMap<>();
+            newHeaders.put("Referer", headers.get("Referer"));
+            newHeaders.put("Origin", headers.get("Origin"));
+            AppUtils.log("stream headers: " + AppUtils.mapToJson(newHeaders));
+            url = server.getProxyUrl(streamUrl) + server.getEncodedQuery(streamUrl, newHeaders);
+        }
+
         return new MediaItem.Builder()
-                .setUri(streamUrl)
+                .setUri(url)
                 .setMediaMetadata(metadata)
                 .setSubtitleConfigurations(subtitles)
                 .build();

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.mediarouter.app.MediaRouteChooserDialog;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
@@ -29,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
@@ -54,7 +56,7 @@ public class CastManager {
         return castContext.getSessionManager();
     }
 
-    protected CastSession getCastSession() {
+    private CastSession getCastSession() {
         return getSessionManager().getCurrentCastSession();
     }
 
@@ -69,6 +71,10 @@ public class CastManager {
 
     public boolean isPlaying() {
         return isConnected() && getRemoteMediaClient() != null && getRemoteMediaClient().hasMediaSession();
+    }
+
+    public boolean isMute() {
+        return getCastSession().isMute();
     }
 
     public boolean playStream(Stream stream) {
@@ -103,6 +109,13 @@ public class CastManager {
 
     public void disconnect() {
         getSessionManager().endCurrentSession(true);
+    }
+
+    public void showCastDevicesDialog(Context context) {
+        MediaRouteChooserDialog dialog = new MediaRouteChooserDialog(context, R.style.AppTheme);
+        dialog.setRouteSelector(castContext.getMergedSelector());
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
     }
 
     //request callback
@@ -238,6 +251,8 @@ public class CastManager {
             public void onSessionStarted(@NonNull CastSession castSession, @NonNull String id) {
                 listener.onSessionUpdate(SessionStatus.STARTED, id);
 
+                listenForMessages(castSession);
+
                 if (streamQueue != null) {
                     playStream(streamQueue);
                     streamQueue = null;
@@ -297,14 +312,18 @@ public class CastManager {
 
     private static final String NAMESPACE = "urn:x-cast:webvideobrowser";
 
-    public void sendMessage(String message) throws IOException, JSONException {
+    public void listenForMessages(CastSession session) {
+        try {
+            session.setMessageReceivedCallbacks(NAMESPACE, messageCallback);
+        } catch (IOException e) {
+            AppUtils.log("setMessageReceivedCallbacks", e);
+        }
+    }
+
+    public void sendMessage(String message) throws JSONException {
         CastSession session = getCastSession();
-
-        session.setMessageReceivedCallbacks(NAMESPACE, messageCallback);
-
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("message", message);
-
         session.sendMessage(NAMESPACE, jsonObject.toString());
     }
 

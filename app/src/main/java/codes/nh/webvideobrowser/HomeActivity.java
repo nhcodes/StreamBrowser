@@ -39,6 +39,7 @@ import codes.nh.webvideobrowser.fragments.bookmark.BookmarksFragment;
 import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
 import codes.nh.webvideobrowser.fragments.cast.CastManager;
 import codes.nh.webvideobrowser.fragments.cast.CastPlaybackFragment;
+import codes.nh.webvideobrowser.fragments.cast.CastViewModel;
 import codes.nh.webvideobrowser.fragments.history.HistoryFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryViewModel;
 import codes.nh.webvideobrowser.fragments.settings.SettingsFragment;
@@ -86,6 +87,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private MainViewModel mainViewModel;
 
+    private CastViewModel castViewModel;
+
     private StreamViewModel streamViewModel;
 
     private SheetManager sheetManager;
@@ -94,11 +97,9 @@ public class HomeActivity extends AppCompatActivity {
 
     private View rootView;
 
-    private MediaRouteButton mediaRouteButton;
+    //private MediaRouteButton mediaRouteButton;
 
     private FloatingActionButton streamsButton;
-
-    private CastManager castManager;
 
     private FilePicker filePicker;
 
@@ -134,6 +135,10 @@ public class HomeActivity extends AppCompatActivity {
             snackbar.show();
         });
 
+        castViewModel = new ViewModelProvider(this).get(CastViewModel.class);
+        castViewModel.getCastManager().setListener(castListener);
+        castViewModel.getCastManager().startSessionListener();
+
         streamViewModel = new ViewModelProvider(this).get(StreamViewModel.class);
         streamViewModel.getStreamRequest().observe(this, streamRequest -> {
             if (streamRequest != null) {
@@ -147,13 +152,9 @@ public class HomeActivity extends AppCompatActivity {
 
         sheetManager = new SheetManager(this);
 
-        App app = (App) getApplication();
-        castManager = app.getCastManager();
-        castManager.setListener(castListener);
-
-        mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
+        /*mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
-        mediaRouteButton.setClickable(false);
+        mediaRouteButton.setClickable(false);*/
 
         streamsButton = findViewById(R.id.activity_home_button_streams);
         streamsButton.setOnClickListener(new View.OnClickListener() {
@@ -201,8 +202,6 @@ public class HomeActivity extends AppCompatActivity {
 
         getOnBackPressedDispatcher().addCallback(backPressedCallback);
 
-        castManager.startSessionListener();
-
         filePicker = new FilePicker(this);
         filePicker.register(this::onPickFile);
     }
@@ -213,11 +212,11 @@ public class HomeActivity extends AppCompatActivity {
 
         backPressedCallback.remove();
 
-        if (!castManager.isPlaying()) { //todo
+        if (!castViewModel.getCastManager().isPlaying()) { //todo
             ProxyService.stop(getApplicationContext());
         }
 
-        castManager.stopSessionListener();
+        castViewModel.getCastManager().stopSessionListener();
 
         super.onDestroy();
     }
@@ -226,7 +225,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        castManager.startPlaybackListener();
+        castViewModel.getCastManager().startPlaybackListener();
     }
 
     @Override
@@ -325,9 +324,10 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void startStream(Stream stream) {
-        boolean connected = castManager.playStream(stream);
+        boolean connected = castViewModel.getCastManager().playStream(stream);
         if (!connected) {
-            mediaRouteButton.showDialog();
+            //mediaRouteButton.showDialog();
+            castViewModel.getCastManager().showCastDevicesDialog(this);
         }
     }
 
@@ -384,7 +384,7 @@ public class HomeActivity extends AppCompatActivity {
 
             String streamUrl;
             try {
-                streamUrl = remoteMediaClient.getMediaInfo().getCustomData().getString("url"); //bc of proxy
+                streamUrl = remoteMediaClient.getMediaInfo().getCustomData().getString("url"); //todo bc of proxy
             } catch (JSONException e) {
                 AppUtils.log("custom data json", e);
                 return;
@@ -405,7 +405,7 @@ public class HomeActivity extends AppCompatActivity {
         public void onSessionUpdate(CastManager.SessionStatus sessionStatus, Object... data) {
             //AppUtils.log("onSessionUpdate " + sessionStatus.name());
             if (sessionStatus == CastManager.SessionStatus.STARTED || sessionStatus == CastManager.SessionStatus.RESUMED) {
-                castManager.startPlaybackListener();
+                castViewModel.getCastManager().startPlaybackListener();
             } else if (sessionStatus == CastManager.SessionStatus.ENDED) {
                 ProxyService.stop(getApplicationContext());
             }

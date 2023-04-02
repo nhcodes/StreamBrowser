@@ -9,10 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.cast.MediaMetadata;
 
-import codes.nh.webvideobrowser.HomeActivity;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.settings.SettingsManager;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
@@ -29,11 +29,11 @@ public class CastPlaybackFragment extends SheetFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        HomeActivity activity = (HomeActivity) requireActivity();
+        CastViewModel castViewModel = new ViewModelProvider(requireActivity()).get(CastViewModel.class);
 
         SettingsManager settingsManager = new SettingsManager(getApplicationContext());
 
-        CastUiController ui = new CastUiController(activity);
+        CastUiController ui = new CastUiController(requireActivity(), castViewModel.getCastManager());
 
         int skipTime = settingsManager.getSkipTime();
 

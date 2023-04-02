@@ -9,8 +9,6 @@ import codes.nh.webvideobrowser.utils.ImageUtils;
 
 public class App extends Application {
 
-    private CastManager castManager;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -19,12 +17,7 @@ public class App extends Application {
 
         Async.startTimeoutScheduler();
 
-        castManager = new CastManager(getApplicationContext());
-
         ImageUtils.initializeBitmapCache();
     }
 
-    public CastManager getCastManager() {
-        return castManager;
-    }
 }

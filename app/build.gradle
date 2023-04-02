@@ -49,7 +49,7 @@ dependencies {
     implementation "androidx.media3:media3-exoplayer-dash:1.0.0"
     implementation "androidx.media3:media3-exoplayer-hls:1.0.0"
     implementation "androidx.media3:media3-ui:1.0.0"
-    //implementation "androidx.media3:media3-cast:1.0.0-rc02"
+    //implementation "androidx.media3:media3-cast:1.0.0"
 
     implementation "com.google.android.gms:play-services-cast-framework:21.3.0"
     implementation "com.google.android.material:material:1.8.0"

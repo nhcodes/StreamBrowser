@@ -66,11 +66,12 @@
         android:contentDescription="@string/navigation_title_streams"
         android:src="@drawable/icon_streams" />
 
+    <!--
     <androidx.mediarouter.app.MediaRouteButton
         android:id="@+id/activity_home_button_mediaroute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:mediaRouteButtonTint="?attr/colorOnSecondary" />
+        app:mediaRouteButtonTint="?attr/colorOnSecondary" />-->
 
 </RelativeLayout>
