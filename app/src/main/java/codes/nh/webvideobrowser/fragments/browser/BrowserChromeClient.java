@@ -1,5 +1,6 @@
 package codes.nh.webvideobrowser.fragments.browser;
 
+import android.graphics.Bitmap;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
@@ -11,6 +12,14 @@ public class BrowserChromeClient extends WebChromeClient {
 
         Browser browser = (Browser) webView;
         browser.getListener().onUpdateTitle(title);
+    }
+
+    @Override
+    public void onReceivedIcon(WebView webView, Bitmap favicon) {
+        super.onReceivedIcon(webView, favicon);
+
+        Browser browser = (Browser) webView;
+        browser.getListener().onUpdateFavicon(favicon);
     }
 
     @Override
