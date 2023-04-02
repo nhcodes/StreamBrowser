@@ -44,6 +44,9 @@ public class VideoActivity extends AppCompatActivity {
         video.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         video.setControllerAutoShow(true);
         video.setShowSubtitleButton(true);
+        video.setFullscreenButtonClickListener(isFullScreen -> {
+            finish();
+        });
     }
 
 
