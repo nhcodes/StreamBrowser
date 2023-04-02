@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import androidx.collection.LruCache;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -72,4 +73,17 @@ public class ImageUtils {
         }
         return null;
     }
+
+    public static byte[] bytesFromBitmap(Bitmap bitmap) {
+        if (bitmap == null) return null;
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        return stream.toByteArray();
+    }
+
+    public static Bitmap bitmapFromBytes(byte[] imageByte) {
+        if (imageByte == null) return null;
+        return BitmapFactory.decodeByteArray(imageByte, 0, imageByte.length);
+    }
+
 }

@@ -13,11 +13,14 @@ public class BrowserDestination {
 
     private final String title;
 
+    private final byte[] favicon;
+
     private final long time;
 
-    public BrowserDestination(@NonNull String url, String title, long time) {
+    public BrowserDestination(@NonNull String url, String title, byte[] favicon, long time) {
         this.url = url;
         this.title = title;
+        this.favicon = favicon;
         this.time = time;
     }
 
@@ -28,6 +31,10 @@ public class BrowserDestination {
 
     public String getTitle() {
         return title;
+    }
+
+    public byte[] getFavicon() {
+        return favicon;
     }
 
     public long getTime() {

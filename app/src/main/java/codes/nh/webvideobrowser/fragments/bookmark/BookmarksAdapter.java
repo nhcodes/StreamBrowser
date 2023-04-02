@@ -32,8 +32,9 @@ public class BookmarksAdapter extends RecyclerAdapter<Bookmark> {
 
         holder.urlText.setText(bookmark.getUrl());
 
-        String faviconUrl = UrlUtils.getFaviconUrl(bookmark.getUrl());
-        ImageUtils.setImageViewFromUrl(holder.faviconImage, faviconUrl, R.drawable.icon_bookmark, 0);
+        holder.faviconImage.setImageBitmap(ImageUtils.bitmapFromBytes(bookmark.getFavicon()));
+        /*String faviconUrl = UrlUtils.getFaviconUrl(bookmark.getUrl());
+        ImageUtils.setImageViewFromUrl(holder.faviconImage, faviconUrl, R.drawable.icon_bookmark, 0);*/
     }
 
     private static class Holder extends RecyclerView.ViewHolder {

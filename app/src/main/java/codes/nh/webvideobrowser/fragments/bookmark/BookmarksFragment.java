@@ -61,7 +61,7 @@ public class BookmarksFragment extends SheetFragment {
                     mainViewModel.showSnackbar(new SnackbarRequest("no website loaded"));
                     return;
                 }
-                Bookmark bookmark = new Bookmark(destination.getUrl(), destination.getTitle());
+                Bookmark bookmark = new Bookmark(destination.getUrl(), destination.getTitle(), destination.getFavicon());
                 addBookmark(bookmark);
             }
         });
