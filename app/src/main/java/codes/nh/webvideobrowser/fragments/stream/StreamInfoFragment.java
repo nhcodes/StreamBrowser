@@ -50,6 +50,10 @@ public class StreamInfoFragment extends SheetFragment {
         video = view.findViewById(R.id.fragment_stream_info_video);
         video.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         video.setControllerAutoShow(true);
+        video.setShowSubtitleButton(true);
+        video.setFullscreenButtonClickListener(isFullScreen -> {
+            play(stream);
+        });
 
         BottomNavigationView actionbar = view.findViewById(R.id.fragment_stream_info_actionbar);
         actionbar.setSelectedItemId(R.id.action_none);

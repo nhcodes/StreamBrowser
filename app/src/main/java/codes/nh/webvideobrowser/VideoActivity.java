@@ -40,9 +40,13 @@ public class VideoActivity extends AppCompatActivity {
         }
 
         video = findViewById(R.id.activity_video_video);
+        video.setKeepScreenOn(true);
         video.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
         video.setControllerAutoShow(true);
-        video.setKeepScreenOn(true);
+        video.setShowSubtitleButton(true);
+        video.setFullscreenButtonClickListener(isFullScreen -> {
+            finish();
+        });
     }
 
 
