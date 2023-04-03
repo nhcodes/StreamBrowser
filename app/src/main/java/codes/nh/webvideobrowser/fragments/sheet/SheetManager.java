@@ -6,17 +6,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
-import codes.nh.webvideobrowser.HomeActivity;
 import codes.nh.webvideobrowser.R;
-import codes.nh.webvideobrowser.fragments.stream.StreamsFragment;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class SheetManager {
 
-    private final HomeActivity activity;
+    private final AppCompatActivity activity;
 
     private final ImageButton backButton;
 
@@ -26,7 +25,7 @@ public class SheetManager {
 
     private final BottomSheetBehavior<LinearLayout> behavior;
 
-    public SheetManager(HomeActivity activity) {
+    public SheetManager(AppCompatActivity activity) {
         this.activity = activity;
 
         LinearLayout sheetLayout = activity.findViewById(R.id.fragment_sheet_layout);
@@ -44,7 +43,7 @@ public class SheetManager {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-                    activity.clearNavigationSelection();
+                    listener.onClosed();
                 }
             }
 
@@ -64,11 +63,8 @@ public class SheetManager {
     }
 
     public void open(SheetRequest sheetRequest) {
-        //close();
 
-        if (sheetRequest.getFragmentClass() == StreamsFragment.class) { //todo
-            activity.clearNavigationSelection();
-        }
+        listener.onOpen(sheetRequest);
 
         SheetFragment fragment = null;
         try {
@@ -114,7 +110,23 @@ public class SheetManager {
             }
         });
 
-        activity.clearNavigationSelection();
+        //listener.onClosed(); todo already done in onStateChange
+    }
+
+    //listener
+
+    private Listener listener;
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    public interface Listener {
+
+        void onOpen(SheetRequest sheetRequest);
+
+        void onClosed();
+
     }
 
 }
