@@ -2,24 +2,21 @@ package codes.nh.webvideobrowser;
 
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.mediarouter.app.MediaRouteButton;
 
 import com.google.android.gms.cast.MediaStatus;
-import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.color.MaterialColors;
@@ -37,8 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import codes.nh.webvideobrowser.fragments.bookmark.BookmarksFragment;
 import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
+import codes.nh.webvideobrowser.fragments.cast.CastFullControllerFragment;
 import codes.nh.webvideobrowser.fragments.cast.CastManager;
-import codes.nh.webvideobrowser.fragments.cast.CastPlaybackFragment;
 import codes.nh.webvideobrowser.fragments.cast.CastViewModel;
 import codes.nh.webvideobrowser.fragments.history.HistoryFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryViewModel;
@@ -101,6 +98,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private FloatingActionButton streamsButton;
 
+    private FragmentContainerView miniControllerFragment;
+
     private FilePicker filePicker;
 
     @Override
@@ -151,6 +150,19 @@ public class HomeActivity extends AppCompatActivity {
         rootView = findViewById(R.id.activity_home_layout_root);
 
         sheetManager = new SheetManager(this);
+        sheetManager.setListener(new SheetManager.Listener() {
+            @Override
+            public void onOpen(SheetRequest sheetRequest) {
+                if (sheetRequest.getFragmentClass() == StreamsFragment.class) {
+                    clearNavigationSelection();
+                }
+            }
+
+            @Override
+            public void onClosed() {
+                clearNavigationSelection();
+            }
+        });
 
         /*mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
         CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
@@ -165,17 +177,14 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        ViewGroup miniControllerFragment = findViewById(R.id.activity_home_fragment_minicontroller);
-        for (int i = 0; i < miniControllerFragment.getChildCount(); i++) {
-            View child = miniControllerFragment.getChildAt(i);
-            child.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SheetRequest request = new SheetRequest(CastPlaybackFragment.class);
-                    mainViewModel.openSheet(request);
-                }
-            });
-        }
+        miniControllerFragment = findViewById(R.id.activity_home_fragment_minicontroller);
+        miniControllerFragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SheetRequest request = new SheetRequest(CastFullControllerFragment.class);
+                mainViewModel.openSheet(request);
+            }
+        });
 
         bottomNavigation = findViewById(R.id.activity_home_navigation_bottom);
         clearNavigationSelection();
@@ -324,20 +333,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void startStream(Stream stream) {
-        boolean connected = castViewModel.getCastManager().playStream(stream);
-        if (!connected) {
-            //mediaRouteButton.showDialog();
-            castViewModel.getCastManager().showCastDevicesDialog(this);
-        }
+        castViewModel.getCastManager().requestStream(HomeActivity.this, stream);
     }
 
     private final CastManager.Listener castListener = new CastManager.Listener() {
 
         @Override
         public void onStreamRequested(Stream stream) {
-
-            mainViewModel.showSnackbar(new SnackbarRequest("onStreamRequested"));
-
+            miniControllerFragment.setVisibility(View.VISIBLE);
+            //mainViewModel.showSnackbar(new SnackbarRequest("onStreamRequested"));
         }
 
         @Override
@@ -361,10 +365,12 @@ public class HomeActivity extends AppCompatActivity {
                 return;
             }
 
-            SheetRequest request = new SheetRequest(CastPlaybackFragment.class);
-            mainViewModel.openSheet(request);
+            miniControllerFragment.setVisibility(View.VISIBLE);
 
-            mainViewModel.showSnackbar(new SnackbarRequest("onStreamStart"));
+            //SheetRequest request = new SheetRequest(CastFullControllerFragment.class);
+            //mainViewModel.openSheet(request);
+
+            //mainViewModel.showSnackbar(new SnackbarRequest("onStreamStart"));
 
             historyViewModel.addHistory(stream, success -> {
                 if (!success) {
@@ -378,9 +384,12 @@ public class HomeActivity extends AppCompatActivity {
         public void onStreamUpdate(RemoteMediaClient remoteMediaClient, int stateId) {
 
             if (stateId == MediaStatus.PLAYER_STATE_IDLE) {
-                //mainViewModel.closeSheet();
+                mainViewModel.closeSheet();
+                miniControllerFragment.setVisibility(View.GONE);
                 return;
             }
+
+            miniControllerFragment.setVisibility(View.VISIBLE);
 
             String streamUrl;
             try {
@@ -405,8 +414,12 @@ public class HomeActivity extends AppCompatActivity {
         public void onSessionUpdate(CastManager.SessionStatus sessionStatus, Object... data) {
             //AppUtils.log("onSessionUpdate " + sessionStatus.name());
             if (sessionStatus == CastManager.SessionStatus.STARTED || sessionStatus == CastManager.SessionStatus.RESUMED) {
+                if (castViewModel.getCastManager().isPlaying()) {
+                    miniControllerFragment.setVisibility(View.VISIBLE);
+                }
                 castViewModel.getCastManager().startPlaybackListener();
             } else if (sessionStatus == CastManager.SessionStatus.ENDED) {
+                miniControllerFragment.setVisibility(View.GONE);
                 ProxyService.stop(getApplicationContext());
             }
         }

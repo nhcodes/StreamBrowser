@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorSurface"
+    android:baselineAligned="false"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/fragment_cast_mini_controller_text_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            tools:text="Some title of some video lalala lululu hahaha" />
+
+        <TextView
+            android:id="@+id/fragment_cast_mini_controller_text_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            tools:text="https://example.com/fjwe/fwnefiwfmiwrmgirgiwmfiwrgmweifmwie_gfiwrmgiwemgimwg/fwemgfiuwnegfiunefnw/?=fjwiefwe" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/fragment_cast_mini_controller_button_play"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Play/Pause"
+            android:src="@drawable/icon_control_play"
+            app:tint="?attr/colorControlNormal" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/fragment_cast_mini_controller_loader"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_centerInParent="true"
+            android:indeterminate="true" />
+
+    </RelativeLayout>
+
+</LinearLayout>

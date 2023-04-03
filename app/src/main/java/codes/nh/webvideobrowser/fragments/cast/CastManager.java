@@ -77,20 +77,22 @@ public class CastManager {
         return getCastSession().isMute();
     }
 
-    public boolean playStream(Stream stream) {
+    public void requestStream(Context context, Stream stream) {
+        listener.onStreamRequested(stream);
 
         if (!isConnected()) {
             streamQueue = stream;
-            return false;
+            showCastDevicesDialog(context);
+            return;
         }
 
-        listener.onStreamRequested(stream);
+        playStream(stream);
+    }
 
+    private void playStream(Stream stream) {
         getRemoteMediaClient()
                 .load(stream.createMediaLoadRequestData())
                 .setResultCallback(getRequestCallback(stream), requestTimeoutSeconds, TimeUnit.SECONDS);
-
-        return true;
     }
 
     public boolean goToLive() {
@@ -194,7 +196,7 @@ public class CastManager {
                 RemoteMediaClient remoteMediaClient = getRemoteMediaClient();
 
                 int stateId = remoteMediaClient.getPlayerState();
-                String[] states = new String[]{
+                /*String[] states = new String[]{
                         "PLAYER_STATE_UNKNOWN",
                         "PLAYER_STATE_IDLE",
                         "PLAYER_STATE_PLAYING",
@@ -203,7 +205,7 @@ public class CastManager {
                         "PLAYER_STATE_LOADING"
                 };
                 String stateDescription = states[stateId];
-                AppUtils.log("onStatusUpdated " + stateDescription);
+                AppUtils.log("onStatusUpdated " + stateDescription);*/
 
                 listener.onStreamUpdate(remoteMediaClient, stateId);
             }
