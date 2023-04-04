@@ -57,12 +57,13 @@
 
     <string name="help_html">
     <![CDATA[
-    <head><meta name="viewport" content="width=device-width, initial-scale=1.0"/></head>
-    <h1>Help</h1>
-    <h3>Title</h3>
-    <p>Chromecast does not support every video format, more info <a href=\'https://developers.google.com/cast/docs/media\'>here</a></p>
-    <h3>Title</h3>
-    <p>Lorem ipsum</p>
+    <div>
+        <h1>Help</h1>
+        <h3>Title</h3>
+        <p>Chromecast does not support every video format, more info <a href="https://developers.google.com/cast/docs/media">here</a></p>
+        <h3>Title</h3>
+        <p>Lorem ipsum</p>
+    </div>
     ]]>
     </string>
 
