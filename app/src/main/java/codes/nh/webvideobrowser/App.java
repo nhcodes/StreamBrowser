@@ -2,7 +2,6 @@ package codes.nh.webvideobrowser;
 
 import android.app.Application;
 
-import codes.nh.webvideobrowser.fragments.cast.CastManager;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.Async;
 import codes.nh.webvideobrowser.utils.ImageUtils;

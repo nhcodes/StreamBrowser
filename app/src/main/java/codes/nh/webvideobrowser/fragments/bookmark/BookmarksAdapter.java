@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.utils.ImageUtils;
 import codes.nh.webvideobrowser.utils.RecyclerAdapter;
-import codes.nh.webvideobrowser.utils.UrlUtils;
 
 public class BookmarksAdapter extends RecyclerAdapter<Bookmark> {
 
