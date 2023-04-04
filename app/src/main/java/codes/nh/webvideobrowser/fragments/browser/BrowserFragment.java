@@ -16,7 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.mediarouter.app.MediaRouteButton;
 
+import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.List;
@@ -202,14 +204,8 @@ public class BrowserFragment extends Fragment {
             }
         });
 
-        ImageButton helpButton = view.findViewById(R.id.fragment_browser_button_help);
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String html = getString(R.string.help_html);
-                webView.loadData(html, "text/html", "UTF-8");
-            }
-        });
+        MediaRouteButton mediaRouteButton = view.findViewById(R.id.media_route_button);
+        CastButtonFactory.setUpMediaRouteButton(requireContext().getApplicationContext(), mediaRouteButton);
 
     }
 

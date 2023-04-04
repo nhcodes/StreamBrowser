@@ -37,6 +37,7 @@ import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
 import codes.nh.webvideobrowser.fragments.cast.CastFullControllerFragment;
 import codes.nh.webvideobrowser.fragments.cast.CastManager;
 import codes.nh.webvideobrowser.fragments.cast.CastViewModel;
+import codes.nh.webvideobrowser.fragments.help.HelpFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryViewModel;
 import codes.nh.webvideobrowser.fragments.settings.SettingsFragment;
@@ -53,6 +54,8 @@ import codes.nh.webvideobrowser.utils.SnackbarRequest;
 public class HomeActivity extends AppCompatActivity {
 
     /* TODO LIST
+
+    https://developer.android.com/guide/topics/media/exoplayer/downloading-media
 
     https://developers.google.com/cast/docs/reference/web_receiver
 
@@ -94,8 +97,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private View rootView;
 
-    //private MediaRouteButton mediaRouteButton;
-
     private FloatingActionButton streamsButton;
 
     private FragmentContainerView miniControllerFragment;
@@ -136,7 +137,6 @@ public class HomeActivity extends AppCompatActivity {
 
         castViewModel = new ViewModelProvider(this).get(CastViewModel.class);
         castViewModel.getCastManager().setListener(castListener);
-        castViewModel.getCastManager().startSessionListener();
 
         streamViewModel = new ViewModelProvider(this).get(StreamViewModel.class);
         streamViewModel.getStreamRequest().observe(this, streamRequest -> {
@@ -164,10 +164,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        /*mediaRouteButton = findViewById(R.id.activity_home_button_mediaroute);
-        CastButtonFactory.setUpMediaRouteButton(getApplicationContext(), mediaRouteButton);
-        mediaRouteButton.setClickable(false);*/
-
         streamsButton = findViewById(R.id.activity_home_button_streams);
         streamsButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,6 +182,10 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        if (castViewModel.getCastManager().isPlaying()) {
+            miniControllerFragment.setVisibility(View.VISIBLE);
+        }
+
         bottomNavigation = findViewById(R.id.activity_home_navigation_bottom);
         clearNavigationSelection();
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -197,8 +197,8 @@ public class HomeActivity extends AppCompatActivity {
                     request = new SheetRequest(BookmarksFragment.class);
                 } else if (id == R.id.action_navigation_history) {
                     request = new SheetRequest(HistoryFragment.class);
-                    //} else if (id == R.id.action_navigation_help) {
-                    //request = new SheetRequest(HelpFragment.class);
+                } else if (id == R.id.action_navigation_help) {
+                    request = new SheetRequest(HelpFragment.class);
                 } else if (id == R.id.action_navigation_settings) {
                     request = new SheetRequest(SettingsFragment.class);
                 } else {
@@ -225,7 +225,6 @@ public class HomeActivity extends AppCompatActivity {
             ProxyService.stop(getApplicationContext());
         }
 
-        castViewModel.getCastManager().stopSessionListener();
 
         super.onDestroy();
     }
@@ -234,12 +233,12 @@ public class HomeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        castViewModel.getCastManager().startPlaybackListener();
+        castViewModel.getCastManager().startSessionListener();
     }
 
     @Override
     protected void onPause() {
-        //castManager.stopPlaybackListener();
+        castViewModel.getCastManager().stopSessionListener();
 
         super.onPause();
     }
@@ -339,13 +338,26 @@ public class HomeActivity extends AppCompatActivity {
     private final CastManager.Listener castListener = new CastManager.Listener() {
 
         @Override
-        public void onStreamRequested(Stream stream) {
+        public void onSessionStarted() {
+            if (castViewModel.getCastManager().isPlaying()) {
+                miniControllerFragment.setVisibility(View.VISIBLE);
+            }
+        }
+
+        @Override
+        public void onSessionEnded() {
+            miniControllerFragment.setVisibility(View.GONE);
+            ProxyService.stop(getApplicationContext());
+        }
+
+        @Override
+        public void onPlaybackRequested(Stream stream) {
             miniControllerFragment.setVisibility(View.VISIBLE);
             //mainViewModel.showSnackbar(new SnackbarRequest("onStreamRequested"));
         }
 
         @Override
-        public void onStreamStart(Stream stream, String error) {
+        public void onPlaybackStarted(Stream stream, String error) {
             if (error != null) {
                 mainViewModel.closeSheet();
                 //todo mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
@@ -381,7 +393,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onStreamUpdate(RemoteMediaClient remoteMediaClient, int stateId) {
+        public void onPlaybackUpdate(RemoteMediaClient remoteMediaClient, int stateId) {
 
             if (stateId == MediaStatus.PLAYER_STATE_IDLE) {
                 mainViewModel.closeSheet();
@@ -408,20 +420,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
             });
 
-        }
-
-        @Override
-        public void onSessionUpdate(CastManager.SessionStatus sessionStatus, Object... data) {
-            //AppUtils.log("onSessionUpdate " + sessionStatus.name());
-            if (sessionStatus == CastManager.SessionStatus.STARTED || sessionStatus == CastManager.SessionStatus.RESUMED) {
-                if (castViewModel.getCastManager().isPlaying()) {
-                    miniControllerFragment.setVisibility(View.VISIBLE);
-                }
-                castViewModel.getCastManager().startPlaybackListener();
-            } else if (sessionStatus == CastManager.SessionStatus.ENDED) {
-                miniControllerFragment.setVisibility(View.GONE);
-                ProxyService.stop(getApplicationContext());
-            }
         }
 
         @Override

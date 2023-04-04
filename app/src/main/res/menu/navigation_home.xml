@@ -28,9 +28,9 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_navigation_todo"
+        android:id="@+id/action_navigation_help"
         android:icon="@drawable/icon_help"
-        android:title="TODO"
+        android:title="@string/navigation_title_help"
         app:showAsAction="always" />
 
     <item

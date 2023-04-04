@@ -56,7 +56,7 @@ public class CastUiController extends UIMediaController {
     protected void onForwardClicked(@NonNull View view, long skipStepMs) {
         super.onForwardClicked(view, skipStepMs);
 
-        castManager.goToLive();
+        castManager.seekToLive();
     }
 
     public void onStopClicked(View view) {

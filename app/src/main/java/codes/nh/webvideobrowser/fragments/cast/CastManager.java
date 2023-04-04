@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -36,20 +35,21 @@ import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class CastManager {
 
-    private CastContext castContext;
+    private final CastContext castContext;
 
     private Stream streamQueue;
 
     public CastManager(Context context) {
-        CastContext
-                .getSharedInstance(context, Executors.newSingleThreadExecutor())
-                .addOnSuccessListener(castContext -> {
+        AppUtils.log("init CastManager");
+        castContext = CastContext.getSharedInstance(context);
+                /*.addOnSuccessListener(castContext -> {
+                    AppUtils.log("init CastManager addOnSuccessListener");
                     this.castContext = castContext;
                     startSessionListener();
                 })
                 .addOnFailureListener(e -> {
                     AppUtils.log("CastManager.getSharedInstance", e);
-                });
+                });*/
     }
 
     private SessionManager getSessionManager() {
@@ -70,7 +70,7 @@ public class CastManager {
     }
 
     public boolean isPlaying() {
-        return isConnected() && getRemoteMediaClient() != null && getRemoteMediaClient().hasMediaSession();
+        return isConnected() && getRemoteMediaClient().hasMediaSession();
     }
 
     public boolean isMute() {
@@ -78,7 +78,7 @@ public class CastManager {
     }
 
     public void requestStream(Context context, Stream stream) {
-        listener.onStreamRequested(stream);
+        listener.onPlaybackRequested(stream);
 
         if (!isConnected()) {
             streamQueue = stream;
@@ -95,14 +95,11 @@ public class CastManager {
                 .setResultCallback(getRequestCallback(stream), requestTimeoutSeconds, TimeUnit.SECONDS);
     }
 
-    public boolean goToLive() {
+    public void seekToLive() {
         RemoteMediaClient remoteMediaClient = getRemoteMediaClient();
-        if (remoteMediaClient.isLiveStream()) {
-            MediaSeekOptions toEnd = new MediaSeekOptions.Builder().setIsSeekToInfinite(true).build();
-            remoteMediaClient.seek(toEnd);
-            return true;
-        }
-        return false;
+        if (!remoteMediaClient.isLiveStream()) return;
+        MediaSeekOptions toEnd = new MediaSeekOptions.Builder().setIsSeekToInfinite(true).build();
+        remoteMediaClient.seek(toEnd);
     }
 
     public void stopStream() {
@@ -118,6 +115,19 @@ public class CastManager {
         dialog.setRouteSelector(castContext.getMergedSelector());
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
+    }
+
+    //devices
+
+    public CastDevice getCastDevice() {
+        return getCastSession().getCastDevice();
+    }
+
+    public List<MediaRouter.RouteInfo> scanCastDevices(Application application) {
+        MediaRouteSelector selector = castContext.getMergedSelector();
+        if (selector == null) return new ArrayList<>();
+        MediaRouter mediaRouter = MediaRouter.getInstance(application);
+        return mediaRouter.getRoutes().stream().filter(route -> route.matchesSelector(selector)).collect(Collectors.toList());
     }
 
     //request callback
@@ -140,51 +150,109 @@ public class CastManager {
                 errorMessage += "status=" + mediaChannelResult.getStatus() + "\n";
 
                 AppUtils.log(errorMessage);
-                listener.onStreamStart(stream, errorMessage);
+                listener.onPlaybackStarted(stream, errorMessage);
                 return;
             }
 
-            listener.onStreamStart(stream, null);
+            listener.onPlaybackStarted(stream, null);
 
             stopPlaybackListener();
             startPlaybackListener();
 
-            goToLive();
+            seekToLive();
 
         };
     }
 
-    public CastDevice getCastDevice() {
-        return getCastSession().getCastDevice();
+    //session listener
+
+    public void startSessionListener() {
+        AppUtils.log("startSessionListener");
+        getSessionManager().addSessionManagerListener(sessionListener, CastSession.class);
     }
 
-    public List<MediaRouter.RouteInfo> scanCastDevices(Application application) {
-        MediaRouteSelector selector = castContext.getMergedSelector();
-        if (selector == null) return new ArrayList<>();
-        MediaRouter mediaRouter = MediaRouter.getInstance(application);
-        return mediaRouter.getRoutes().stream().filter(route -> route.matchesSelector(selector)).collect(Collectors.toList());
+    public void stopSessionListener() {
+        AppUtils.log("stopSessionListener");
+        getSessionManager().removeSessionManagerListener(sessionListener, CastSession.class);
     }
+
+    private void onSessionStart(CastSession session) {
+        listener.onSessionStarted();
+
+        startPlaybackListener();
+        startMessageListener(session);
+
+        if (streamQueue != null) {
+            playStream(streamQueue);
+            streamQueue = null;
+        }
+    }
+
+    private void onSessionEnd(CastSession session) {
+        listener.onSessionEnded();
+
+        stopPlaybackListener();
+    }
+
+    private final SessionManagerListener<CastSession> sessionListener = new SessionManagerListener<>() {
+
+        @Override
+        public void onSessionStarting(@NonNull CastSession session) {
+        }
+
+        @Override
+        public void onSessionStarted(@NonNull CastSession session, @NonNull String id) {
+            onSessionStart(session);
+        }
+
+        @Override
+        public void onSessionStartFailed(@NonNull CastSession session, int error) {
+        }
+
+        @Override
+        public void onSessionEnding(@NonNull CastSession session) {
+        }
+
+        @Override
+        public void onSessionEnded(@NonNull CastSession session, int error) {
+            onSessionEnd(session);
+        }
+
+        @Override
+        public void onSessionResuming(@NonNull CastSession session, @NonNull String id) {
+        }
+
+        @Override
+        public void onSessionResumed(@NonNull CastSession session, boolean wasSuspended) {
+            onSessionStart(session);
+        }
+
+        @Override
+        public void onSessionResumeFailed(@NonNull CastSession session, int error) {
+        }
+
+        @Override
+        public void onSessionSuspended(@NonNull CastSession session, int reason) {
+            onSessionEnd(session);
+        }
+    };
 
     //playback listener
 
     private RemoteMediaClient.Callback playbackListener;
 
-    public void startPlaybackListener() {
-        if (castContext == null) return;
-        if (playbackListener == null && isConnected()) {
-            AppUtils.log("startPlaybackListener");
-            playbackListener = getPlaybackListener();
-            getRemoteMediaClient().registerCallback(playbackListener);
-        }
+    private void startPlaybackListener() {
+        if (playbackListener != null) return;
+        AppUtils.log("startPlaybackListener");
+        playbackListener = getPlaybackListener();
+        getRemoteMediaClient().registerCallback(playbackListener);
     }
 
-    public void stopPlaybackListener() {
-        if (castContext == null) return;
-        if (playbackListener != null && isConnected()) {
-            AppUtils.log("stopPlaybackListener");
-            getRemoteMediaClient().unregisterCallback(playbackListener);
-            playbackListener = null;
-        }
+    private void stopPlaybackListener() {
+        if (playbackListener == null) return;
+        AppUtils.log("stopPlaybackListener");
+        getRemoteMediaClient().unregisterCallback(playbackListener);
+        playbackListener = null;
     }
 
     private RemoteMediaClient.Callback getPlaybackListener() {
@@ -193,10 +261,12 @@ public class CastManager {
             @Override
             public void onStatusUpdated() {
                 super.onStatusUpdated();
+
                 RemoteMediaClient remoteMediaClient = getRemoteMediaClient();
 
                 int stateId = remoteMediaClient.getPlayerState();
-                /*String[] states = new String[]{
+                /*
+                String[] states = new String[]{
                         "PLAYER_STATE_UNKNOWN",
                         "PLAYER_STATE_IDLE",
                         "PLAYER_STATE_PLAYING",
@@ -205,9 +275,10 @@ public class CastManager {
                         "PLAYER_STATE_LOADING"
                 };
                 String stateDescription = states[stateId];
-                AppUtils.log("onStatusUpdated " + stateDescription);*/
+                AppUtils.log("onStatusUpdated " + stateDescription);
+                */
 
-                listener.onStreamUpdate(remoteMediaClient, stateId);
+                listener.onPlaybackUpdate(remoteMediaClient, stateId);
             }
 
             @Override
@@ -219,104 +290,13 @@ public class CastManager {
         };
     }
 
-    //session listener
-
-    private SessionManagerListener<CastSession> sessionListener;
-
-    public void startSessionListener() {
-        if (castContext == null) return;
-        if (sessionListener == null) {
-            AppUtils.log("startSessionListener");
-            sessionListener = getSessionListener();
-            getSessionManager().addSessionManagerListener(sessionListener, CastSession.class);
-        }
-    }
-
-    public void stopSessionListener() {
-        if (castContext == null) return;
-        if (sessionListener != null) {
-            AppUtils.log("stopSessionListener");
-            getSessionManager().removeSessionManagerListener(sessionListener, CastSession.class);
-            sessionListener = null;
-        }
-    }
-
-    private SessionManagerListener<CastSession> getSessionListener() {
-        return new SessionManagerListener<>() {
-
-            @Override
-            public void onSessionStarting(@NonNull CastSession castSession) {
-                listener.onSessionUpdate(SessionStatus.STARTING);
-            }
-
-            @Override
-            public void onSessionStarted(@NonNull CastSession castSession, @NonNull String id) {
-                listener.onSessionUpdate(SessionStatus.STARTED, id);
-
-                listenForMessages(castSession);
-
-                if (streamQueue != null) {
-                    playStream(streamQueue);
-                    streamQueue = null;
-                }
-            }
-
-            @Override
-            public void onSessionStartFailed(@NonNull CastSession session, int error) {
-                listener.onSessionUpdate(SessionStatus.START_FAILED, error);
-            }
-
-            @Override
-            public void onSessionEnding(@NonNull CastSession session) {
-                listener.onSessionUpdate(SessionStatus.ENDING);
-            }
-
-            @Override
-            public void onSessionEnded(@NonNull CastSession session, int error) {
-                listener.onSessionUpdate(SessionStatus.ENDED, error);
-            }
-
-            @Override
-            public void onSessionResuming(@NonNull CastSession session, @NonNull String id) {
-                listener.onSessionUpdate(SessionStatus.RESUMING, id);
-            }
-
-            @Override
-            public void onSessionResumed(@NonNull CastSession session, boolean wasSuspended) {
-                listener.onSessionUpdate(SessionStatus.RESUMED, wasSuspended);
-            }
-
-            @Override
-            public void onSessionResumeFailed(@NonNull CastSession session, int error) {
-                listener.onSessionUpdate(SessionStatus.RESUME_FAILED, error);
-            }
-
-            @Override
-            public void onSessionSuspended(@NonNull CastSession session, int reason) {
-                listener.onSessionUpdate(SessionStatus.SUSPENDED, reason);
-            }
-        };
-    }
-
-    public enum SessionStatus {
-        STARTING, STARTED, START_FAILED, ENDING, ENDED, RESUMING, RESUMED, RESUME_FAILED, SUSPENDED
-    }
-
-    //message channel
-
-    private final Cast.MessageReceivedCallback messageCallback = new Cast.MessageReceivedCallback() {
-        @Override
-        public void onMessageReceived(@NonNull CastDevice castDevice, @NonNull String namespace, @NonNull String message) {
-            AppUtils.log("onMessageReceived: " + message);
-            listener.onReceiveMessage(message);
-        }
-    };
+    //message listener
 
     private static final String NAMESPACE = "urn:x-cast:webvideobrowser";
 
-    public void listenForMessages(CastSession session) {
+    private void startMessageListener(CastSession session) {
         try {
-            session.setMessageReceivedCallbacks(NAMESPACE, messageCallback);
+            session.setMessageReceivedCallbacks(NAMESPACE, messageListener);
         } catch (IOException e) {
             AppUtils.log("setMessageReceivedCallbacks", e);
         }
@@ -329,6 +309,14 @@ public class CastManager {
         session.sendMessage(NAMESPACE, jsonObject.toString());
     }
 
+    private final Cast.MessageReceivedCallback messageListener = new Cast.MessageReceivedCallback() {
+        @Override
+        public void onMessageReceived(@NonNull CastDevice castDevice, @NonNull String namespace, @NonNull String message) {
+            AppUtils.log("onMessageReceived: " + message);
+            listener.onReceiveMessage(message);
+        }
+    };
+
     //listener
 
     private Listener listener;
@@ -339,13 +327,15 @@ public class CastManager {
 
     public interface Listener {
 
-        void onStreamRequested(Stream stream);
+        void onSessionStarted();
 
-        void onStreamStart(Stream stream, String error);
+        void onSessionEnded();
 
-        void onStreamUpdate(RemoteMediaClient remoteMediaClient, int stateId);
+        void onPlaybackRequested(Stream stream);
 
-        void onSessionUpdate(SessionStatus sessionStatus, Object... data);
+        void onPlaybackStarted(Stream stream, String error);
+
+        void onPlaybackUpdate(RemoteMediaClient remoteMediaClient, int stateId);
 
         void onReceiveMessage(String message);
 
