@@ -5,7 +5,7 @@
     <string name="snackbar_redirect_message">Redirect to %s?</string>
     <string name="snackbar_redirect_action">Go</string>
 
-    <string name="snackbar_play_error_message">%s</string>
+    <string name="snackbar_play_error_message">Cast Error: %s</string>
 
     <string name="snackbar_try_again_message">Try again using proxy?</string>
     <string name="snackbar_try_again_action">Yes</string>

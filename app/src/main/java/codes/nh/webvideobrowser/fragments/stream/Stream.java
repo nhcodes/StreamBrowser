@@ -16,11 +16,9 @@ import com.google.android.gms.common.images.WebImage;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import codes.nh.webvideobrowser.proxy.ProxyServer;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.UrlUtils;
 
@@ -100,7 +98,7 @@ public class Stream {
         return new JSONObject(Map.of("url", streamUrl, "headers", new JSONObject(headers)));
     }
 
-    public MediaLoadRequestData createMediaLoadRequestData() {
+    public MediaLoadRequestData createMediaLoadRequestData(String proxyUrl) {
         MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         metadata.putString(MediaMetadata.KEY_TITLE, title);
         metadata.putString(MediaMetadata.KEY_SUBTITLE, sourceUrl.replaceFirst("https?://", ""));
@@ -123,18 +121,7 @@ public class Stream {
             i++;
         }
 
-        //todo improve
-        String url = streamUrl;
-        if (useProxy()) {
-            ProxyServer server = ProxyServer.getInstance(null); //todo
-            HashMap<String, String> newHeaders = new HashMap<>();
-            newHeaders.put("Referer", headers.get("Referer"));
-            newHeaders.put("Origin", headers.get("Origin"));
-            AppUtils.log("stream headers: " + AppUtils.mapToJson(newHeaders));
-            url = server.getProxyUrl(streamUrl) + server.getEncodedQuery(streamUrl, newHeaders);
-        }
-
-        MediaInfo mediaInfo = new MediaInfo.Builder(url)
+        MediaInfo mediaInfo = new MediaInfo.Builder(proxyUrl)
                 .setMetadata(metadata)
                 .setMediaTracks(subtitles)
                 .setCustomData(getUrlAndHeadersJson())
@@ -163,19 +150,8 @@ public class Stream {
             subtitles.add(subtitle);
         }
 
-        //todo improve
-        String url = streamUrl;
-        if (useProxy()) {
-            ProxyServer server = ProxyServer.getInstance(null); //todo
-            HashMap<String, String> newHeaders = new HashMap<>();
-            newHeaders.put("Referer", headers.get("Referer"));
-            newHeaders.put("Origin", headers.get("Origin"));
-            AppUtils.log("stream headers: " + AppUtils.mapToJson(newHeaders));
-            url = server.getProxyUrl(streamUrl) + server.getEncodedQuery(streamUrl, newHeaders);
-        }
-
         return new MediaItem.Builder()
-                .setUri(url)
+                .setUri(streamUrl)
                 .setMediaMetadata(metadata)
                 .setSubtitleConfigurations(subtitles)
                 .build();

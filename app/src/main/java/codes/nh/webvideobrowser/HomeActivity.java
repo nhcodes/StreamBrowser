@@ -29,8 +29,6 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import codes.nh.webvideobrowser.fragments.bookmark.BookmarksFragment;
 import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
@@ -46,7 +44,6 @@ import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.fragments.stream.StreamViewModel;
 import codes.nh.webvideobrowser.fragments.stream.StreamsFragment;
-import codes.nh.webvideobrowser.proxy.ProxyService;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.FilePicker;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
@@ -221,11 +218,6 @@ public class HomeActivity extends AppCompatActivity {
 
         backPressedCallback.remove();
 
-        if (!castViewModel.getCastManager().isPlaying()) { //todo
-            ProxyService.stop(getApplicationContext());
-        }
-
-
         super.onDestroy();
     }
 
@@ -347,7 +339,6 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public void onSessionEnded() {
             miniControllerFragment.setVisibility(View.GONE);
-            ProxyService.stop(getApplicationContext());
         }
 
         @Override
@@ -358,21 +349,18 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public void onPlaybackStarted(Stream stream, String error) {
+
             if (error != null) {
-                mainViewModel.closeSheet();
-                //todo mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
+                //mainViewModel.closeSheet();
 
-                if (!stream.useProxy()) {
-                    stream.setUseProxy(true);
-
-                    ProxyService.start(getApplicationContext()); //todo improve
-                    Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-                        playStream(stream);
-                    }, 1, TimeUnit.SECONDS);
-
-                } else {
-                    mainViewModel.showSnackbar(new SnackbarRequest("error casting: " + error));
+                if (stream.useProxy()) {
+                    mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
+                    return;
                 }
+
+                //try streaming through proxy
+                stream.setUseProxy(true);
+                playStream(stream);
 
                 return;
             }

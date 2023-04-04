@@ -31,6 +31,10 @@ public class Async {
         execute(task, TIMEOUT_DEFAULT);
     }
 
+    public static void executeOnMainThread(Runnable runnable) {
+        HANDLER.post(runnable);
+    }
+
     private static <T> Future<?> startResultTask(ResultTask<T> task) {
         return EXECUTOR_SERVICE.submit(() -> {
             T result = task.doAsync();

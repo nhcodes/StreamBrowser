@@ -1,6 +1,5 @@
 package codes.nh.webvideobrowser.proxy;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Base64;
@@ -25,27 +24,21 @@ import codes.nh.webvideobrowser.utils.UrlUtils;
 
 public class ProxyServer extends HttpServer {
 
-    private static ProxyServer PROXY_SERVER;
+    private final Context context;
 
-    public static ProxyServer getInstance(Context context) {
-        if (PROXY_SERVER == null) {
-            PROXY_SERVER = new ProxyServer(1111, context);
-        }
-        return PROXY_SERVER;
+    public ProxyServer(Context context, int port) {
+        super(port);
+        this.context = context;
     }
 
-    //
+    public void startProxy() {
+        ProxyService.start(context);
+        start();
+    }
 
-    private final ContentResolver contentResolver;
-
-    /*private ProxyServer(int port) throws Exception {
-        super(port);
-        contentResolver = null;
-    }*/
-
-    private ProxyServer(int port, Context context) {
-        super(port);
-        contentResolver = context.getContentResolver();
+    public void stopProxy() {
+        stop();
+        ProxyService.stop(context);
     }
 
     @Override
@@ -75,7 +68,7 @@ public class ProxyServer extends HttpServer {
 
         if (remoteUrl.startsWith("content://")) { //local file
 
-            responseContent = contentResolver.openInputStream(Uri.parse(remoteUrl));
+            responseContent = context.getContentResolver().openInputStream(Uri.parse(remoteUrl));
 
             AppUtils.log(id + " file read took " + (System.currentTimeMillis() - startTime));
 

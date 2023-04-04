@@ -31,7 +31,7 @@ public abstract class HttpServer {
 
     private ServerSocket serverSocket;
 
-    private Runnable updateListener;
+    private Runnable startListener, updateListener, stopListener;
 
     public HttpServer(int port) {
         this.port = port;
@@ -78,12 +78,23 @@ public abstract class HttpServer {
         return getGlobalAddress() + UrlUtils.getFileNameFromUrl(url);
     }
 
+    public void setStartListener(Runnable startListener) {
+        this.startListener = startListener;
+    }
+
     public void setUpdateListener(Runnable updateListener) {
         this.updateListener = updateListener;
     }
 
+    public void setStopListener(Runnable stopListener) {
+        this.stopListener = stopListener;
+    }
+
     public void start() {
-        if (serverSocket != null) return;
+        if (serverSocket != null) {
+            startListener.run();
+            return;
+        }
         AppUtils.log("starting server @ " + getGlobalAddress());
         new Thread(() -> handleServer()).start();
     }
@@ -104,6 +115,8 @@ public abstract class HttpServer {
         try (ServerSocket server = new ServerSocket(port);) {
             serverSocket = server;
 
+            startListener.run();
+
             while (true) {
 
                 Socket client = serverSocket.accept();
@@ -122,6 +135,8 @@ public abstract class HttpServer {
         } catch (Exception e) {
             AppUtils.log("handleServer()", e);
             serverSocket = null;
+
+            stopListener.run();
         }
     }
 

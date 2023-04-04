@@ -20,9 +20,6 @@ public class ProxyService extends Service {
 
     public static void start(Context context) {
         AppUtils.log("ProxyService.start");
-
-        ProxyServer.getInstance(context);
-
         Intent intent = new Intent(context, ProxyService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
@@ -42,24 +39,9 @@ public class ProxyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
         AppUtils.log("ProxyService onCreate");
 
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        ProxyServer server = ProxyServer.getInstance(this);
-
-        server.setUpdateListener(() -> {
-            String notificationText = getNotificationText(System.currentTimeMillis());
-            Notification notification = createNotification(notificationText);
-            notificationManager.notify(NOTIFICATION_ID, notification);
-        });
-
-        server.start();
+        initNotificationManager();
     }
 
 
@@ -68,7 +50,7 @@ public class ProxyService extends Service {
         AppUtils.log("ProxyService onStartCommand");
 
         if (notification == null) {
-            String notificationText = getNotificationText(System.currentTimeMillis());
+            String notificationText = getNotificationText(/*System.currentTimeMillis()*/);
             notification = createNotification(notificationText);
         }
 
@@ -80,9 +62,6 @@ public class ProxyService extends Service {
     @Override
     public void onDestroy() {
         AppUtils.log("ProxyService onDestroy");
-
-        ProxyServer.getInstance(this).stop();
-
         super.onDestroy();
     }
 
@@ -99,14 +78,20 @@ public class ProxyService extends Service {
 
     private static final int NOTIFICATION_ID = 11;
 
-    private NotificationManager notificationManager;
-
     private Notification notification;
 
-    private String getNotificationText(long lastUpdate) {
-        String localAddress = ProxyServer.getInstance(this).getLocalAddress();
-        String notificationText = "Proxy running @ :" + localAddress + " | "
-                + "Last update: " + AppUtils.getTimeStringFromTimestamp(lastUpdate);
+    private void initNotificationManager() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private String getNotificationText(/*long lastUpdate*/) {
+        //String localAddress = proxyServer.getLocalAddress();
+        String notificationText = "Proxy running";// @ :" + localAddress + " | "
+                //+ "Last update: " + AppUtils.getTimeStringFromTimestamp(lastUpdate);
         return notificationText;
     }
 
