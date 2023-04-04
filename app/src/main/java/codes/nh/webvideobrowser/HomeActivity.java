@@ -39,6 +39,7 @@ import codes.nh.webvideobrowser.fragments.help.HelpFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryFragment;
 import codes.nh.webvideobrowser.fragments.history.HistoryViewModel;
 import codes.nh.webvideobrowser.fragments.settings.SettingsFragment;
+import codes.nh.webvideobrowser.fragments.settings.SettingsManager;
 import codes.nh.webvideobrowser.fragments.sheet.SheetManager;
 import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
@@ -353,7 +354,8 @@ public class HomeActivity extends AppCompatActivity {
             if (error != null) {
                 //mainViewModel.closeSheet();
 
-                if (stream.useProxy()) {
+                boolean useProxy = new SettingsManager(getApplicationContext()).getUseProxy();
+                if (!useProxy || stream.useProxy()) {
                     mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
                     return;
                 }

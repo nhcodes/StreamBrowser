@@ -92,11 +92,8 @@ public class CastManager {
             return;
         }
 
-        playStream(stream);
-    }
-
-    private void playStream(Stream stream) {
         String url = stream.getStreamUrl();
+
         if (stream.useProxy()) {
             HashMap<String, String> newHeaders = new HashMap<>();
             newHeaders.put("Referer", stream.getHeaders().get("Referer"));
@@ -108,12 +105,12 @@ public class CastManager {
                     loadStream(proxyUrl, stream);
                 });
             });
-        } else {
-            loadStream(url, stream);
         }
+
+        loadStream(url, stream);
     }
 
-    private final int requestTimeoutSeconds = 10;
+    private final int requestTimeoutSeconds = 5;
 
     private void loadStream(String url, Stream stream) {
         getRemoteMediaClient()
@@ -225,7 +222,7 @@ public class CastManager {
         startMessageListener(session);
 
         if (streamQueue != null) {
-            playStream(streamQueue);
+            loadStream(streamQueue.getStreamUrl(), streamQueue);
             streamQueue = null;
         }
     }

@@ -25,6 +25,10 @@ public class SettingsManager {
         return preferences.getInt("preference_skip_time", 15);
     }
 
+    public boolean getUseProxy() {
+        return preferences.getBoolean("preference_use_proxy", true);
+    }
+
     //listener
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;

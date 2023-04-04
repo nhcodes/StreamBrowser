@@ -38,6 +38,13 @@
             app:summary="How many seconds should be skipped forwards/backwards?"
             app:title="Skip time" />
 
+        <SwitchPreference
+            app:defaultValue="true"
+            app:iconSpaceReserved="false"
+            app:key="preference_use_proxy"
+            app:summary="Try streaming through the phone if the stream doesn't support casting."
+            app:title="Cast through proxy" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
