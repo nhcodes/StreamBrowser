@@ -15,9 +15,9 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/card_history_image_thumbnail"
-            android:layout_width="80dp"
-            android:layout_height="45dp"
-            android:layout_margin="4dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
             android:src="@drawable/icon_video"
             app:shapeAppearance="@style/AppTheme.RoundedShapeAppearance" />
 
@@ -28,14 +28,30 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/card_history_text_title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="marquee"
-                android:singleLine="true"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-                tools:text="Some title or name" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/card_history_text_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="marquee"
+                    android:singleLine="true"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    tools:text="Some title or name" />
+
+                <TextView
+                    android:id="@+id/card_history_text_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="8dp"
+                    android:singleLine="true"
+                    tools:text="00:00" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/card_history_text_host"
@@ -52,13 +68,6 @@
                 android:ellipsize="marquee"
                 android:singleLine="true"
                 tools:text="@string/card_history_file" />
-
-            <TextView
-                android:id="@+id/card_history_text_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                tools:text="@string/card_history_time" />
 
         </LinearLayout>
 

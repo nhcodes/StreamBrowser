@@ -15,9 +15,9 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/card_stream_image_thumbnail"
-            android:layout_width="80dp"
-            android:layout_height="45dp"
-            android:layout_margin="4dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
             android:src="@drawable/icon_video"
             app:shapeAppearance="@style/AppTheme.RoundedShapeAppearance" />
 
@@ -41,8 +41,8 @@
                 android:id="@+id/card_stream_text_url"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:breakStrategy="high_quality"
                 android:ellipsize="end"
+                android:hyphenationFrequency="none"
                 android:lines="3"
                 tools:text="https://some.domain.com/this/is/a/path/video_720.mp4?query=idk&amp;value=30&amp;token=fjerijg35gi3fm4itm3if3m4f34ijtj34jt34imf343i4g34g43" />
 

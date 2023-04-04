@@ -25,7 +25,7 @@
 
     <string name="card_history_host">Host: %s</string>
     <string name="card_history_file">File: %s</string>
-    <string name="card_history_time">Time: %s</string>
+    <string name="card_history_time">%s</string>
 
     <string name="fragment_bookmark_edit_title">Edit bookmark</string>
     <string name="fragment_bookmark_edit_hint_url">Url</string>
