@@ -12,6 +12,8 @@ import java.util.function.Supplier;
 
 public class Async {
 
+    //todo exception handling
+
     private static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
 
     private static final HandlerExecutor THREAD_MAIN = new HandlerExecutor(Looper.getMainLooper());
@@ -50,7 +52,7 @@ public class Async {
     }
 
     public static void executeOnMainThread(Runnable async) {
-        execute(async, 0);
+        executeOnMainThread(async, 0);
     }
 
 }

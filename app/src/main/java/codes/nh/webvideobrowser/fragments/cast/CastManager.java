@@ -105,9 +105,10 @@ public class CastManager {
                     loadStream(proxyUrl, stream);
                 });
             });
+        } else {
+            loadStream(url, stream);
         }
 
-        loadStream(url, stream);
     }
 
     private final int requestTimeoutSeconds = 10;
@@ -292,7 +293,10 @@ public class CastManager {
     private void stopPlaybackListener() {
         if (playbackListener == null) return;
         AppUtils.log("stopPlaybackListener");
-        getRemoteMediaClient().unregisterCallback(playbackListener);
+        RemoteMediaClient remoteMediaClient = getRemoteMediaClient();
+        if (remoteMediaClient != null) {
+            remoteMediaClient.unregisterCallback(playbackListener);
+        }
         playbackListener = null;
     }
 
@@ -318,7 +322,7 @@ public class CastManager {
                 AppUtils.log("onStatusUpdated " + stateDescription);
 
                 if (stateId == PLAYER_STATE_IDLE) {
-                    stopProxyServer();
+                    //stopProxyServer();
                 }
 
                 listener.onPlaybackUpdate(remoteMediaClient, stateId);
