@@ -34,72 +34,37 @@ public class HistoryViewModel extends AndroidViewModel {
     }
 
     public void getHistory(String streamUrl, Consumer<List<Stream>> callback) {
-        Async.execute(new Async.ResultTask<List<Stream>>() {
-            @Override
-            public List<Stream> doAsync() {
-                return historyDao.getByUrl(streamUrl);
-            }
-
-            @Override
-            public void doSync(List<Stream> history) {
-                callback.accept(history);
-            }
-        });
+        Async.execute(
+                () -> historyDao.getByUrl(streamUrl),
+                (history) -> callback.accept(history)
+        );
     }
 
     public void addHistory(Stream stream, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Long>() {
-            @Override
-            public Long doAsync() {
-                return historyDao.insert(stream);
-            }
-
-            @Override
-            public void doSync(Long row) {
-                callback.accept(row != -1);
-            }
-        });
+        Async.execute(
+                () -> historyDao.insert(stream),
+                (row) -> callback.accept(row != -1)
+        );
     }
 
     public void updateHistory(String streamUrl, long startTime, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return historyDao.update(streamUrl, startTime);
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed > 0);
-            }
-        });
+        Async.execute(
+                () -> historyDao.update(streamUrl, startTime),
+                (changed) -> callback.accept(changed > 0)
+        );
     }
 
     public void removeHistory(Stream stream, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return historyDao.delete(stream);
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed > 0);
-            }
-        });
+        Async.execute(
+                () -> historyDao.delete(stream),
+                (changed) -> callback.accept(changed > 0)
+        );
     }
 
     public void clearHistory(Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return historyDao.deleteAll();
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed > 0);
-            }
-        });
+        Async.execute(
+                () -> historyDao.deleteAll(),
+                (changed) -> callback.accept(changed > 0)
+        );
     }
 }

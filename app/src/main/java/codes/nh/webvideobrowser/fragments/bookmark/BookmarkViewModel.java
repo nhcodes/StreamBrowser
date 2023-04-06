@@ -33,45 +33,24 @@ public class BookmarkViewModel extends AndroidViewModel {
     }
 
     public void addBookmark(Bookmark bookmark, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Long>() {
-            @Override
-            public Long doAsync() {
-                return bookmarkDao.insert(bookmark);
-            }
-
-            @Override
-            public void doSync(Long row) {
-                callback.accept(row != -1);
-            }
-        });
+        Async.execute(
+                () -> bookmarkDao.insert(bookmark),
+                (row) -> callback.accept(row != -1)
+        );
     }
 
     public void updateBookmark(Bookmark bookmark, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return bookmarkDao.update(bookmark);
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed > 0);
-            }
-        });
+        Async.execute(
+                () -> bookmarkDao.update(bookmark),
+                (changed) -> callback.accept(changed > 0)
+        );
     }
 
     public void removeBookmark(Bookmark bookmark, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return bookmarkDao.delete(bookmark);
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed > 0);
-            }
-        });
+        Async.execute(
+                () -> bookmarkDao.delete(bookmark),
+                (changed) -> callback.accept(changed > 0)
+        );
     }
 
     //edit bookmark

@@ -128,44 +128,23 @@ public class BrowserViewModel extends AndroidViewModel {
     }
 
     public void addDestination(BrowserDestination destination, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Long>() {
-            @Override
-            public Long doAsync() {
-                return historyDao.insert(destination);
-            }
-
-            @Override
-            public void doSync(Long row) {
-                callback.accept(row != -1);
-            }
-        });
+        Async.execute(
+                () -> historyDao.insert(destination),
+                (row) -> callback.accept(row != -1)
+        );
     }
 
     private void deleteDestinationsAfter(BrowserDestination destination, Consumer<Boolean> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return historyDao.deleteAfter(destination.getTime());
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed > 0);
-            }
-        });
+        Async.execute(
+                () -> historyDao.deleteAfter(destination.getTime()),
+                (changed) -> callback.accept(changed > 0)
+        );
     }
 
     private void clearDestinations(int keepCount, Consumer<Integer> callback) {
-        Async.execute(new Async.ResultTask<Integer>() {
-            @Override
-            public Integer doAsync() {
-                return historyDao.clear(keepCount);
-            }
-
-            @Override
-            public void doSync(Integer changed) {
-                callback.accept(changed);
-            }
-        });
+        Async.execute(
+                () -> historyDao.clear(keepCount),
+                (changed) -> callback.accept(changed)
+        );
     }
 }

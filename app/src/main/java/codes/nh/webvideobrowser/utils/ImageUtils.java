@@ -44,23 +44,18 @@ public class ImageUtils {
             return;
         }
 
-        Async.execute(new Async.ResultTask<Bitmap>() {
-            @Override
-            public Bitmap doAsync() {
-                return getBitmapFromUrl(url, compress);
-            }
-
-            @Override
-            public void doSync(Bitmap bitmap) {
-                if (bitmap == null) {
-                    NOT_FOUND_LIST.add(url);
-                    return;
-                }
-
-                imageView.setImageBitmap(bitmap);
-                BITMAP_CACHE.put(url, bitmap);
-            }
-        }, 3000L);
+        Async.execute(
+                () -> getBitmapFromUrl(url, compress),
+                (loadedBitmap) -> {
+                    if (loadedBitmap == null) {
+                        NOT_FOUND_LIST.add(url);
+                        return;
+                    }
+                    imageView.setImageBitmap(loadedBitmap);
+                    BITMAP_CACHE.put(url, loadedBitmap);
+                },
+                3000L
+        );
     }
 
     private static Bitmap getBitmapFromUrl(String url, int compress) {

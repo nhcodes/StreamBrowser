@@ -110,7 +110,7 @@ public class CastManager {
         loadStream(url, stream);
     }
 
-    private final int requestTimeoutSeconds = 5;
+    private final int requestTimeoutSeconds = 10;
 
     private void loadStream(String url, Stream stream) {
         getRemoteMediaClient()

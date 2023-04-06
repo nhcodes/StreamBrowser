@@ -126,9 +126,10 @@ public abstract class HttpServer {
                 int id = idCounter;
                 idCounter++;
 
-                Async.execute((Async.NoResultTask) () -> {
-                    handleClient(client, id);
-                }, TIMEOUT_CLIENT_FULL);
+                Async.execute(
+                        () -> handleClient(client, id),
+                        TIMEOUT_CLIENT_FULL
+                );
 
             }
 
