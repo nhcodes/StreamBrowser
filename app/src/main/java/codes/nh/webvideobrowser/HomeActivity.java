@@ -354,9 +354,10 @@ public class HomeActivity extends AppCompatActivity {
             if (error != null) {
                 //mainViewModel.closeSheet();
 
-                boolean useProxy = new SettingsManager(getApplicationContext()).getUseProxy();
-                if (!useProxy || stream.useProxy()) {
-                    mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
+                mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
+
+                boolean proxyEnabled = new SettingsManager(getApplicationContext()).getUseProxy();
+                if (!proxyEnabled || stream.useProxy()) { //if streaming through proxy is disabled or stream is already playing on proxy
                     return;
                 }
 
@@ -414,7 +415,7 @@ public class HomeActivity extends AppCompatActivity {
 
         @Override
         public void onReceiveMessage(String message) {
-            mainViewModel.showSnackbar(new SnackbarRequest("Received: " + message));
+            //mainViewModel.showSnackbar(new SnackbarRequest("Received: " + message));
         }
     };
 
