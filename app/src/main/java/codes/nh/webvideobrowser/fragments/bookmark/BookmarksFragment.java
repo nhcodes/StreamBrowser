@@ -53,18 +53,7 @@ public class BookmarksFragment extends SheetFragment {
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         FloatingActionButton addButton = view.findViewById(R.id.fragment_bookmarks_button_add);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BrowserDestination destination = browserViewModel.getDestination(0);
-                if (destination == null) {
-                    mainViewModel.showSnackbar(new SnackbarRequest("no website loaded"));
-                    return;
-                }
-                Bookmark bookmark = new Bookmark(destination.getUrl(), destination.getTitle(), destination.getFavicon());
-                addBookmark(bookmark);
-            }
-        });
+        addButton.setOnClickListener(v -> addBookmark());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setStackFromEnd(true);
@@ -77,27 +66,41 @@ public class BookmarksFragment extends SheetFragment {
         bookmarksAdapter.setListener(new RecyclerAdapter.Listener<>() {
             @Override
             public void onClick(Bookmark bookmark) {
-                BrowserRequest request = new BrowserRequest(bookmark.getUrl());
-                browserViewModel.setRequestLoadUrl(request);
-                mainViewModel.closeSheet();
+                openBookmark(bookmark);
             }
 
             @Override
             public void onLongClick(Bookmark bookmark) {
-                bookmarkViewModel.setEditBookmark(bookmark);
-                SheetRequest request = new SheetRequest(BookmarkEditFragment.class);
-                mainViewModel.openSheet(request);
+                editBookmark(bookmark);
             }
         });
     }
 
     //database
 
-    private void addBookmark(Bookmark bookmark) {
+    private void addBookmark() {
+        BrowserDestination destination = browserViewModel.getDestination(0);
+        if (destination == null) {
+            mainViewModel.showSnackbar(new SnackbarRequest("no website loaded"));
+            return;
+        }
+        Bookmark bookmark = new Bookmark(destination.getUrl(), destination.getTitle(), destination.getFavicon());
         bookmarkViewModel.addBookmark(bookmark, success -> {
-            String text = success ? "add success" : "add error";
+            //String text = success ? "add success" : "add error";
             //mainViewModel.showSnackbar(text);
             listView.smoothScrollBy(0, Integer.MIN_VALUE);
         });
+    }
+
+    private void openBookmark(Bookmark bookmark) {
+        BrowserRequest request = new BrowserRequest(bookmark.getUrl());
+        browserViewModel.setRequestLoadUrl(request);
+        mainViewModel.closeSheet();
+    }
+
+    private void editBookmark(Bookmark bookmark) {
+        bookmarkViewModel.setEditBookmark(bookmark);
+        SheetRequest request = new SheetRequest(BookmarkEditFragment.class);
+        mainViewModel.openSheet(request);
     }
 }

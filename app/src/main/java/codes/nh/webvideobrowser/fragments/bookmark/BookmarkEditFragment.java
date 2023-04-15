@@ -48,31 +48,19 @@ public class BookmarkEditFragment extends SheetFragment {
         urlInput.setText(bookmark.getUrl());
 
         MaterialButton removeButton = view.findViewById(R.id.fragment_bookmark_edit_button_remove);
-        removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                removeBookmark(bookmark);
-                close();
-            }
-        });
+        removeButton.setOnClickListener(v ->
+                removeBookmark(bookmark)
+        );
 
         MaterialButton saveButton = view.findViewById(R.id.fragment_bookmark_edit_button_save);
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                bookmark.setUrl(urlInput.getText().toString());
-                bookmark.setTitle(titleInput.getText().toString());
-                updateBookmark(bookmark);
-                close();
-            }
-        });
+        saveButton.setOnClickListener(v ->
+                updateBookmark(bookmark, urlInput.getText().toString(), titleInput.getText().toString())
+        );
     }
 
     @Override
     public Runnable getBackButtonClickListener() {
-        return () -> {
-            close();
-        };
+        return () -> close();
     }
 
     private void close() {
@@ -81,15 +69,19 @@ public class BookmarkEditFragment extends SheetFragment {
 
     //database
 
-    private void updateBookmark(Bookmark bookmark) {
+    private void updateBookmark(Bookmark bookmark, String url, String title) {
+        bookmark.setUrl(url);
+        bookmark.setTitle(title);
         bookmarkViewModel.updateBookmark(bookmark, success -> {
             if (!success) mainViewModel.showSnackbar(new SnackbarRequest("update error"));
         });
+        close();
     }
 
     private void removeBookmark(Bookmark bookmark) {
         bookmarkViewModel.removeBookmark(bookmark, success -> {
             if (!success) mainViewModel.showSnackbar(new SnackbarRequest("remove error"));
         });
+        close();
     }
 }
