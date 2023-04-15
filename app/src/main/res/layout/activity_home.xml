@@ -24,7 +24,7 @@
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_browser" />
 
-            <!-- class="com.google.android.gms.cast.framework.media.widget.MiniControllerFragment" -->
+            <!--
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/activity_home_fragment_minicontroller"
                 android:name="codes.nh.webvideobrowser.fragments.cast.CastMiniControllerFragment"
@@ -32,6 +32,14 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:visibility="gone" />
+            -->
+            <fragment
+                class="codes.nh.webvideobrowser.fragments.cast.CastMiniControllerFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:visibility="gone"
+                app:castShowImageThumbnail="false" />
 
             <include layout="@layout/fragment_sheet" />
 

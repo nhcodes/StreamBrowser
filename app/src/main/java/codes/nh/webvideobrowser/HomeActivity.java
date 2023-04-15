@@ -13,7 +13,6 @@ import android.widget.EditText;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.cast.MediaStatus;
@@ -52,6 +51,8 @@ import codes.nh.webvideobrowser.utils.SnackbarRequest;
 public class HomeActivity extends AppCompatActivity {
 
     /* TODO LIST
+
+    https://developer.android.com/guide/navigation/navigation-getting-started
 
     https://developer.android.com/guide/topics/media/exoplayer/downloading-media
 
@@ -97,7 +98,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private FloatingActionButton streamsButton;
 
-    private FragmentContainerView miniControllerFragment;
+    //private FragmentContainerView miniControllerFragment;
 
     private FilePicker filePicker;
 
@@ -171,7 +172,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        miniControllerFragment = findViewById(R.id.activity_home_fragment_minicontroller);
+        /*miniControllerFragment = findViewById(R.id.activity_home_fragment_minicontroller);
         miniControllerFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -182,7 +183,7 @@ public class HomeActivity extends AppCompatActivity {
 
         if (castViewModel.getCastManager().isPlaying()) {
             miniControllerFragment.setVisibility(View.VISIBLE);
-        }
+        }*/
 
         bottomNavigation = findViewById(R.id.activity_home_navigation_bottom);
         clearNavigationSelection();
@@ -211,6 +212,8 @@ public class HomeActivity extends AppCompatActivity {
 
         filePicker = new FilePicker(this);
         filePicker.register(this::onPickFile);
+
+        castViewModel.getCastManager().startSessionListener();
     }
 
     @Override
@@ -219,21 +222,9 @@ public class HomeActivity extends AppCompatActivity {
 
         backPressedCallback.remove();
 
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        castViewModel.getCastManager().startSessionListener();
-    }
-
-    @Override
-    protected void onPause() {
         castViewModel.getCastManager().stopSessionListener();
 
-        super.onPause();
+        super.onDestroy();
     }
 
     //navigation
@@ -331,28 +322,22 @@ public class HomeActivity extends AppCompatActivity {
     private final CastManager.Listener castListener = new CastManager.Listener() {
 
         @Override
-        public void onSessionStarted() {
-            if (castViewModel.getCastManager().isPlaying()) {
-                miniControllerFragment.setVisibility(View.VISIBLE);
+        public void onSessionUpdate(CastManager.SessionStatus sessionStatus, Object... data) {
+            if (sessionStatus == CastManager.SessionStatus.STARTING) {
+                mainViewModel.showSnackbar(new SnackbarRequest("starting cast session..."));
             }
         }
 
         @Override
-        public void onSessionEnded() {
-            miniControllerFragment.setVisibility(View.GONE);
-        }
-
-        @Override
         public void onPlaybackRequested(Stream stream) {
-            miniControllerFragment.setVisibility(View.VISIBLE);
-            //mainViewModel.showSnackbar(new SnackbarRequest("onStreamRequested"));
+            mainViewModel.showSnackbar(new SnackbarRequest("playback requested..."));
         }
 
         @Override
         public void onPlaybackStarted(Stream stream, String error) {
 
             if (error != null) {
-                //mainViewModel.closeSheet();
+                mainViewModel.closeSheet(CastFullControllerFragment.class);
 
                 mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.snackbar_play_error_message, error)));
 
@@ -368,18 +353,11 @@ public class HomeActivity extends AppCompatActivity {
                 return;
             }
 
-            miniControllerFragment.setVisibility(View.VISIBLE);
-
-            //SheetRequest request = new SheetRequest(CastFullControllerFragment.class);
-            //mainViewModel.openSheet(request);
-
-            //mainViewModel.showSnackbar(new SnackbarRequest("onStreamStart"));
+            SheetRequest request = new SheetRequest(CastFullControllerFragment.class);
+            mainViewModel.openSheet(request);
 
             historyViewModel.addHistory(stream, success -> {
-                if (!success) {
-                    AppUtils.log("history insert error");
-                    //mainViewModel.showSnackbar("history insert error");
-                }
+                if (!success) AppUtils.log("history insert error");
             });
         }
 
@@ -387,12 +365,9 @@ public class HomeActivity extends AppCompatActivity {
         public void onPlaybackUpdate(RemoteMediaClient remoteMediaClient, int stateId) {
 
             if (stateId == MediaStatus.PLAYER_STATE_IDLE) {
-                mainViewModel.closeSheet();
-                miniControllerFragment.setVisibility(View.GONE);
+                mainViewModel.closeSheet(CastFullControllerFragment.class);
                 return;
             }
-
-            miniControllerFragment.setVisibility(View.VISIBLE);
 
             String streamUrl;
             try {
@@ -405,17 +380,14 @@ public class HomeActivity extends AppCompatActivity {
             long streamPosition = remoteMediaClient.isLiveStream() ? -1 : remoteMediaClient.getApproximateStreamPosition();
 
             historyViewModel.updateHistory(streamUrl, streamPosition, success -> {
-                if (!success) {
-                    AppUtils.log("history update error");
-                    //mainViewModel.showSnackbar("history update error");
-                }
+                if (!success) AppUtils.log("history update error");
             });
 
         }
 
         @Override
         public void onReceiveMessage(String message) {
-            //mainViewModel.showSnackbar(new SnackbarRequest("Received: " + message));
+            AppUtils.log("onMessageReceived: " + message);
         }
     };
 

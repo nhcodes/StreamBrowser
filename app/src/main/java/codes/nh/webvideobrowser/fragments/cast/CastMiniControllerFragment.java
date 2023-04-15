@@ -1,6 +1,44 @@
 package codes.nh.webvideobrowser.fragments.cast;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.gms.cast.framework.media.widget.MiniControllerFragment;
+
+import codes.nh.webvideobrowser.MainViewModel;
+import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
+
+public class CastMiniControllerFragment extends MiniControllerFragment {
+
+    private MainViewModel mainViewModel;
+
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle bundle) {
+        View view = super.onCreateView(inflater, container, bundle);
+        ViewGroup layout = (ViewGroup) view;
+        View contentView = layout.getChildAt(1); //layout has 2 views, 0:seekbar (probably) and 1:relativeview
+        contentView.setOnClickListener(v -> {
+            mainViewModel.openSheet(new SheetRequest(CastFullControllerFragment.class));
+        });
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+    }
+}
+
+/*import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -42,4 +80,4 @@ public class CastMiniControllerFragment extends Fragment {
         ui.bindImageViewToPlayPauseButton(playButton, progressIndicator);
 
     }
-}
+}*/

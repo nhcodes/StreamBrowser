@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
 import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
@@ -35,6 +36,13 @@ public class MainViewModel extends AndroidViewModel {
 
     public void closeSheet() {
         currentSheet.setValue(null);
+    }
+
+    public void closeSheet(Class<? extends SheetFragment> sheetFragmentClass) {
+        SheetRequest sheet = currentSheet.getValue();
+        if (sheet == null) return;
+        if (!sheetFragmentClass.equals(sheet.getFragmentClass())) return;
+        closeSheet();
     }
 
     //snackbar

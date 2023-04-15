@@ -217,8 +217,6 @@ public class CastManager {
     }
 
     private void onSessionStart(CastSession session) {
-        listener.onSessionStarted();
-
         startPlaybackListener();
         startMessageListener(session);
 
@@ -226,13 +224,16 @@ public class CastManager {
             loadStream(streamQueue.getStreamUrl(), streamQueue);
             streamQueue = null;
         }
+
+        if (isPlaying()) {
+            startProxyServer(() -> {
+                AppUtils.log("session resumed and is playing -> started proxy server");
+            });
+        }
     }
 
     private void onSessionEnd(CastSession session) {
-        listener.onSessionEnded();
-
         stopPlaybackListener();
-
         stopProxyServer();
     }
 
@@ -240,44 +241,56 @@ public class CastManager {
 
         @Override
         public void onSessionStarting(@NonNull CastSession session) {
+            listener.onSessionUpdate(SessionStatus.STARTING);
         }
 
         @Override
         public void onSessionStarted(@NonNull CastSession session, @NonNull String id) {
+            listener.onSessionUpdate(SessionStatus.STARTED, id);
             onSessionStart(session);
         }
 
         @Override
         public void onSessionStartFailed(@NonNull CastSession session, int error) {
+            listener.onSessionUpdate(SessionStatus.START_FAILED, error);
         }
 
         @Override
         public void onSessionEnding(@NonNull CastSession session) {
+            listener.onSessionUpdate(SessionStatus.ENDING);
         }
 
         @Override
         public void onSessionEnded(@NonNull CastSession session, int error) {
+            listener.onSessionUpdate(SessionStatus.ENDED, error);
             onSessionEnd(session);
         }
 
         @Override
         public void onSessionResuming(@NonNull CastSession session, @NonNull String id) {
+            listener.onSessionUpdate(SessionStatus.RESUMING, id);
         }
 
         @Override
         public void onSessionResumed(@NonNull CastSession session, boolean wasSuspended) {
+            listener.onSessionUpdate(SessionStatus.RESUMED, wasSuspended);
             onSessionStart(session);
         }
 
         @Override
         public void onSessionResumeFailed(@NonNull CastSession session, int error) {
+            listener.onSessionUpdate(SessionStatus.RESUME_FAILED, error);
         }
 
         @Override
         public void onSessionSuspended(@NonNull CastSession session, int reason) {
-            onSessionEnd(session);
+            listener.onSessionUpdate(SessionStatus.SUSPENDED, reason);
         }
     };
+
+    public enum SessionStatus {
+        STARTING, STARTED, START_FAILED, ENDING, ENDED, RESUMING, RESUMED, RESUME_FAILED, SUSPENDED
+    }
 
     //playback listener
 
@@ -321,18 +334,17 @@ public class CastManager {
                 String stateDescription = states[stateId];
                 AppUtils.log("onStatusUpdated " + stateDescription);
 
-                if (stateId == PLAYER_STATE_IDLE) {
-                    //stopProxyServer();
-                }
-
                 listener.onPlaybackUpdate(remoteMediaClient, stateId);
+
+                if (stateId == PLAYER_STATE_IDLE) {
+                    stopProxyServer();
+                }
             }
 
             @Override
             public void onMediaError(@NonNull MediaError mediaError) {
                 super.onMediaError(mediaError);
                 AppUtils.log("onMediaError " + mediaError.toJson());
-                stopProxyServer();
             }
 
         };
@@ -360,7 +372,6 @@ public class CastManager {
     private final Cast.MessageReceivedCallback messageListener = new Cast.MessageReceivedCallback() {
         @Override
         public void onMessageReceived(@NonNull CastDevice castDevice, @NonNull String namespace, @NonNull String message) {
-            AppUtils.log("onMessageReceived: " + message);
             listener.onReceiveMessage(message);
         }
     };
@@ -375,9 +386,7 @@ public class CastManager {
 
     public interface Listener {
 
-        void onSessionStarted();
-
-        void onSessionEnded();
+        void onSessionUpdate(SessionStatus sessionStatus, Object... data);
 
         void onPlaybackRequested(Stream stream);
 
