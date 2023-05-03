@@ -38,18 +38,18 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-splashscreen:1.0.0"
+    implementation "androidx.core:core-splashscreen:1.0.1"
 
     implementation "androidx.preference:preference:1.2.0"
 
     implementation "androidx.room:room-runtime:2.5.1"
     annotationProcessor "androidx.room:room-compiler:2.5.1"
 
-    implementation "androidx.media3:media3-exoplayer:1.0.0"
-    implementation "androidx.media3:media3-exoplayer-dash:1.0.0"
-    implementation "androidx.media3:media3-exoplayer-hls:1.0.0"
-    implementation "androidx.media3:media3-ui:1.0.0"
-    implementation "androidx.media3:media3-cast:1.0.0"
+    implementation "androidx.media3:media3-exoplayer:1.0.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.0.1"
+    implementation "androidx.media3:media3-exoplayer-hls:1.0.1"
+    implementation "androidx.media3:media3-ui:1.0.1"
+    implementation "androidx.media3:media3-cast:1.0.1"
 
     //todo 21.3.0 session resume & notification is buggy
     implementation "com.google.android.gms:play-services-cast-framework:21.2.0"
