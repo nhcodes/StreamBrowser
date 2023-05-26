@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -23,8 +24,8 @@ public interface StreamHistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Stream stream);
 
-    @Query("UPDATE Stream SET startTime = :startTime WHERE streamUrl = :url")
-    int update(String url, long startTime);
+    @Update
+    int update(Stream stream);
 
     @Delete
     int delete(Stream stream);

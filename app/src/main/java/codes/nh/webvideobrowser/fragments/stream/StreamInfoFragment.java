@@ -18,7 +18,6 @@ import codes.nh.webvideobrowser.MediaPlayer;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.VideoActivity;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
-import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
 
@@ -134,8 +133,7 @@ public class StreamInfoFragment extends SheetFragment {
         mainViewModel.closeSheet();
 
         Intent intent = new Intent(getApplicationContext(), VideoActivity.class);
-        intent.putExtra("url", stream.getStreamUrl());
-        intent.putExtra("headers", AppUtils.mapToJson(stream.getHeaders()).toString());
+        intent.putExtra("stream", stream.toJson().toString());
         startActivity(intent);
     }
 

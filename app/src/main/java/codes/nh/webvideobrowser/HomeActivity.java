@@ -24,8 +24,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -379,17 +377,18 @@ public class HomeActivity extends AppCompatActivity {
                 return;
             }
 
-            String streamUrl;
+            Stream stream;
             try {
-                streamUrl = remoteMediaClient.getMediaInfo().getCustomData().getString("url"); //todo bc of proxy
-            } catch (JSONException e) {
-                AppUtils.log("custom data json", e);
+                stream = Stream.fromJson(remoteMediaClient.getMediaInfo().getCustomData());
+            } catch (Exception e) {
+                AppUtils.log("onPlaybackUpdate getMediaInfo().getCustomData()", e);
                 return;
             }
 
             long streamPosition = remoteMediaClient.isLiveStream() ? -1 : remoteMediaClient.getApproximateStreamPosition();
+            stream.setStartTime(streamPosition);
 
-            historyViewModel.updateHistory(streamUrl, streamPosition, success -> {
+            historyViewModel.addHistory(stream, success -> { //todo updateHistory
                 if (!success) AppUtils.log("history update error");
             });
 

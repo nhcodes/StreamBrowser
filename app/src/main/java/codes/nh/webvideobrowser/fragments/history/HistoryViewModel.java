@@ -47,9 +47,9 @@ public class HistoryViewModel extends AndroidViewModel {
         );
     }
 
-    public void updateHistory(String streamUrl, long startTime, Consumer<Boolean> callback) {
+    public void updateHistory(Stream stream, Consumer<Boolean> callback) {
         Async.execute(
-                () -> historyDao.update(streamUrl, startTime),
+                () -> historyDao.update(stream),
                 (changed) -> callback.accept(changed > 0)
         );
     }

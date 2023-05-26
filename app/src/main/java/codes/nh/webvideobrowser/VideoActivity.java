@@ -11,17 +11,14 @@ import androidx.media3.ui.PlayerView;
 
 import org.json.JSONObject;
 
-import java.util.Map;
-
+import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class VideoActivity extends AppCompatActivity {
 
     private PlayerView video;
 
-    private String streamUrl;
-
-    private Map<String, String> streamHeaders;
+    private Stream stream;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +27,7 @@ public class VideoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video);
 
         try {
-            streamUrl = getIntent().getStringExtra("url");
-            streamHeaders = AppUtils.jsonToMap(new JSONObject(getIntent().getStringExtra("headers")));
+            stream = Stream.fromJson(new JSONObject(getIntent().getStringExtra("stream")));
         } catch (Exception exception) {
             AppUtils.log("VideoActivity intent", exception);
             Toast.makeText(getApplicationContext(), "an error occured", Toast.LENGTH_SHORT).show();
@@ -56,7 +52,7 @@ public class VideoActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        player.start(getApplicationContext(), streamUrl, streamHeaders);
+        player.start(getApplicationContext(), stream.getStreamUrl(), stream.getHeaders());
         video.setPlayer(player.getPlayer());
     }
 

@@ -13,6 +13,7 @@ import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaTrack;
 import com.google.android.gms.common.images.WebImage;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -94,10 +95,6 @@ public class Stream {
         this.useProxy = useProxy;
     }
 
-    private JSONObject getUrlAndHeadersJson() {
-        return new JSONObject(Map.of("url", streamUrl, "headers", new JSONObject(headers)));
-    }
-
     public MediaLoadRequestData createMediaLoadRequestData(String proxyUrl) {
         MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         metadata.putString(MediaMetadata.KEY_TITLE, title);
@@ -124,7 +121,7 @@ public class Stream {
         MediaInfo mediaInfo = new MediaInfo.Builder(proxyUrl)
                 .setMetadata(metadata)
                 .setMediaTracks(subtitles)
-                .setCustomData(getUrlAndHeadersJson())
+                .setCustomData(toJson())
                 .build();
 
         return new MediaLoadRequestData.Builder()
@@ -166,7 +163,28 @@ public class Stream {
         return false;
     }
 
-    public Stream clone(String newStreamUrl) {
-        return new Stream(newStreamUrl, sourceUrl, title, headers, thumbnailUrls, subtitleUrls, startTime);
+    public JSONObject toJson() {
+        return new JSONObject(Map.of(
+                "streamUrl", streamUrl,
+                "sourceUrl", sourceUrl,
+                "title", title,
+                "headers", AppUtils.mapToJson(headers),
+                "thumbnailUrls", AppUtils.listToJson(thumbnailUrls),
+                "subtitleUrls", AppUtils.listToJson(subtitleUrls),
+                "startTime", startTime
+        ));
     }
+
+    public static Stream fromJson(JSONObject jsonObject) throws JSONException {
+        return new Stream(
+                jsonObject.getString("streamUrl"),
+                jsonObject.getString("sourceUrl"),
+                jsonObject.getString("title"),
+                AppUtils.jsonToMap(jsonObject.getJSONObject("headers")),
+                AppUtils.jsonToList(jsonObject.getJSONArray("thumbnailUrls")),
+                AppUtils.jsonToList(jsonObject.getJSONArray("subtitleUrls")),
+                jsonObject.getLong("startTime")
+        );
+    }
+
 }
