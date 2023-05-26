@@ -2,7 +2,6 @@ package codes.nh.webvideobrowser.fragments.history;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
-import codes.nh.webvideobrowser.utils.ImageUtils;
 import codes.nh.webvideobrowser.utils.RecyclerAdapter;
 import codes.nh.webvideobrowser.utils.UrlUtils;
 
@@ -34,6 +32,9 @@ public class HistoryAdapter extends RecyclerAdapter<Stream> {
         holder.titleText.setText(stream.getTitle());
         holder.titleText.setSelected(true);
 
+        String source = UrlUtils.getHostFromURL(stream.getSourceUrl());
+        holder.sourceText.setText(context.getString(R.string.card_history_source, source));
+
         String host = UrlUtils.getHostFromURL(stream.getStreamUrl());
         holder.hostText.setText(context.getString(R.string.card_history_host, host));
 
@@ -45,25 +46,19 @@ public class HistoryAdapter extends RecyclerAdapter<Stream> {
             time = AppUtils.millisToMinutesSeconds(stream.getStartTime());
         }
         holder.timeText.setText(context.getString(R.string.card_history_time, time));
-
-        if (!stream.getThumbnailUrls().isEmpty()) {
-            ImageUtils.setImageViewFromUrl(holder.thumbnailImage, stream.getThumbnailUrls().get(0), R.drawable.icon_video, 4);
-        }
     }
 
     private static class Holder extends RecyclerView.ViewHolder {
 
-        private final TextView titleText, hostText, fileText, timeText;
-
-        private final ImageView thumbnailImage;
+        private final TextView titleText, sourceText, hostText, fileText, timeText;
 
         public Holder(View view) {
             super(view);
             this.titleText = view.findViewById(R.id.card_history_text_title);
+            this.sourceText = view.findViewById(R.id.card_history_text_source);
             this.hostText = view.findViewById(R.id.card_history_text_host);
             this.fileText = view.findViewById(R.id.card_history_text_file);
             this.timeText = view.findViewById(R.id.card_history_text_time);
-            this.thumbnailImage = view.findViewById(R.id.card_history_image_thumbnail);
         }
     }
 }
