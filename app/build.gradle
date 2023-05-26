@@ -54,7 +54,7 @@ dependencies {
     //todo 21.3.0 session resume & notification is buggy
     implementation "com.google.android.gms:play-services-cast-framework:21.2.0"
 
-    implementation "com.google.android.material:material:1.8.0"
+    implementation "com.google.android.material:material:1.9.0"
 
     //todo remove fix (https://stackoverflow.com/questions/69817925/problem-duplicate-class-androidx-lifecycle-viewmodel-found-in-modules)
     implementation "androidx.appcompat:appcompat:1.6.1"
