@@ -46,6 +46,7 @@ public class BookmarksFragment extends SheetFragment {
         bookmarkViewModel = new ViewModelProvider(requireActivity()).get(BookmarkViewModel.class);
         bookmarkViewModel.getBookmarkList().observe(getViewLifecycleOwner(), bookmarks -> {
             bookmarksAdapter.set(bookmarks);
+            listView.smoothScrollToPosition(Integer.MAX_VALUE);
         });
 
         browserViewModel = new ViewModelProvider(requireActivity()).get(BrowserViewModel.class);
@@ -86,9 +87,7 @@ public class BookmarksFragment extends SheetFragment {
         }
         Bookmark bookmark = new Bookmark(destination.getUrl(), destination.getTitle(), destination.getFavicon());
         bookmarkViewModel.addBookmark(bookmark, success -> {
-            //String text = success ? "add success" : "add error";
-            //mainViewModel.showSnackbar(text);
-            listView.smoothScrollBy(0, Integer.MIN_VALUE);
+            if (!success) mainViewModel.showSnackbar(new SnackbarRequest("add error"));
         });
     }
 

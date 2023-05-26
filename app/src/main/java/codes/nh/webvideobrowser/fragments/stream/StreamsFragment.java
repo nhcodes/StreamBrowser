@@ -33,6 +33,8 @@ public class StreamsFragment extends SheetFragment {
 
     private StreamViewModel streamViewModel;
 
+    private RecyclerView listView;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -42,6 +44,7 @@ public class StreamsFragment extends SheetFragment {
         browserViewModel = new ViewModelProvider(requireActivity()).get(BrowserViewModel.class);
         browserViewModel.getStreams().observe(getViewLifecycleOwner(), streams -> {
             streamsAdapter.set(streams);
+            listView.smoothScrollToPosition(Integer.MAX_VALUE);
         });
 
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
@@ -62,7 +65,7 @@ public class StreamsFragment extends SheetFragment {
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
 
-        RecyclerView listView = view.findViewById(R.id.fragment_streams_list);
+        listView = view.findViewById(R.id.fragment_streams_list);
         listView.setAdapter(streamsAdapter);
         listView.setLayoutManager(layoutManager);
 
