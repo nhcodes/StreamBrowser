@@ -36,7 +36,7 @@ public class SheetManager {
         init();
     }
 
-    public void init() {
+    private void init() {
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
 
         behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
@@ -53,12 +53,8 @@ public class SheetManager {
             }
         });
 
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                close();
-            }
-        });
+        backButton.setOnClickListener(view -> listener.onRequestGoBack());
+        closeButton.setOnClickListener(view -> listener.onRequestClose());
 
     }
 
@@ -75,15 +71,7 @@ public class SheetManager {
 
         titleText.setText(fragment.getTitleId());
 
-        Runnable backButtonListener = fragment.getBackButtonClickListener();
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backButtonListener.run();
-            }
-        });
-
-        backButton.setVisibility(fragment.isOverlay() ? View.VISIBLE : View.INVISIBLE);
+        backButton.setVisibility(fragment.canGoBack() ? View.VISIBLE : View.INVISIBLE);
 
         activity.getSupportFragmentManager()
                 .beginTransaction()
@@ -124,6 +112,10 @@ public class SheetManager {
     public interface Listener {
 
         void onOpen(SheetRequest sheetRequest);
+
+        void onRequestGoBack();
+
+        void onRequestClose();
 
         void onClosed();
 

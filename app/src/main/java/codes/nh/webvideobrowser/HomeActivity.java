@@ -158,6 +158,16 @@ public class HomeActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onRequestGoBack() {
+                mainViewModel.goBackToPreviousSheet();
+            }
+
+            @Override
+            public void onRequestClose() {
+                mainViewModel.closeSheet();
+            }
+
+            @Override
             public void onClosed() {
                 clearNavigationSelection();
             }
@@ -251,7 +261,7 @@ public class HomeActivity extends AppCompatActivity {
         public void handleOnBackPressed() {
 
             if (mainViewModel.isSheetOpen()) {
-                mainViewModel.closeSheet();
+                mainViewModel.goBackToPreviousSheet();
                 return;
             }
 

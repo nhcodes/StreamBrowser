@@ -14,7 +14,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import codes.nh.webvideobrowser.MainViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
-import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
 
@@ -58,13 +57,8 @@ public class BookmarkEditFragment extends SheetFragment {
         );
     }
 
-    @Override
-    public Runnable getBackButtonClickListener() {
-        return () -> close();
-    }
-
     private void close() {
-        mainViewModel.openSheet(new SheetRequest(BookmarksFragment.class));
+        mainViewModel.goBackToPreviousSheet();
     }
 
     //database

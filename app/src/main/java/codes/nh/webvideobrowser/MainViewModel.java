@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.ArrayList;
+
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
 import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
@@ -20,6 +22,8 @@ public class MainViewModel extends AndroidViewModel {
 
     //sheet
 
+    private final ArrayList<SheetRequest> sheetStack = new ArrayList<>();
+
     private final MutableLiveData<SheetRequest> currentSheet = new MutableLiveData<>();
 
     public MutableLiveData<SheetRequest> getCurrentSheet() {
@@ -31,11 +35,23 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void openSheet(SheetRequest sheet) {
+        sheetStack.add(0, sheet);
         currentSheet.setValue(sheet);
+    }
+
+    public void goBackToPreviousSheet() {
+        if (sheetStack.size() < 2) {
+            closeSheet();
+        } else {
+            sheetStack.remove(0);
+            SheetRequest lastSheet = sheetStack.get(0);
+            openSheet(lastSheet);
+        }
     }
 
     public void closeSheet() {
         currentSheet.setValue(null);
+        sheetStack.clear();
     }
 
     public void closeSheet(Class<? extends SheetFragment> sheetFragmentClass) {

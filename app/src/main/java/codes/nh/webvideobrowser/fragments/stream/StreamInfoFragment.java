@@ -156,13 +156,6 @@ public class StreamInfoFragment extends SheetFragment {
         player.stop();
     }
 
-    @Override
-    public Runnable getBackButtonClickListener() {
-        return () -> {
-            mainViewModel.openSheet(new SheetRequest(StreamsFragment.class));
-        };
-    }
-
     /*
 
     //hls playlist
