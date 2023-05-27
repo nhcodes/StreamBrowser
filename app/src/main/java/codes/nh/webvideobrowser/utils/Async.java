@@ -19,7 +19,6 @@ public class Async {
     private static final HandlerExecutor THREAD_MAIN = new HandlerExecutor(Looper.getMainLooper());
 
     public static <T> void execute(Supplier<T> async, Consumer<T> sync, long timeoutMs) {
-        //todo timeout
         CompletableFuture<?> future = CompletableFuture.supplyAsync(async, THREAD_POOL).thenAcceptAsync(sync, THREAD_MAIN);
         if (timeoutMs > 0) {
             TimeoutHandler.add(future, timeoutMs);
@@ -31,7 +30,6 @@ public class Async {
     }
 
     public static void execute(Runnable async, long timeoutMs) {
-        //todo timeout
         CompletableFuture<?> future = CompletableFuture.runAsync(async, THREAD_POOL);
         if (timeoutMs > 0) {
             TimeoutHandler.add(future, timeoutMs);
@@ -44,7 +42,6 @@ public class Async {
 
 
     public static void executeOnMainThread(Runnable async, long timeoutMs) {
-        //todo timeout
         CompletableFuture<?> future = CompletableFuture.runAsync(async, THREAD_MAIN);
         if (timeoutMs > 0) {
             TimeoutHandler.add(future, timeoutMs);
