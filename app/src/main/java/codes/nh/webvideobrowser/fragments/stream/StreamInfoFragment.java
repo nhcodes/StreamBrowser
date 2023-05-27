@@ -8,13 +8,14 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import codes.nh.webvideobrowser.MainViewModel;
-import codes.nh.webvideobrowser.MediaPlayer;
+import codes.nh.webvideobrowser.PlayerViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.VideoActivity;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
@@ -30,6 +31,8 @@ public class StreamInfoFragment extends SheetFragment {
 
     private MainViewModel mainViewModel;
 
+    private PlayerViewModel playerViewModel;
+
     private StreamViewModel streamViewModel;
 
     private PlayerView video;
@@ -41,6 +44,8 @@ public class StreamInfoFragment extends SheetFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
+
+        playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
 
         streamViewModel = new ViewModelProvider(requireActivity()).get(StreamViewModel.class);
 
@@ -137,21 +142,19 @@ public class StreamInfoFragment extends SheetFragment {
         startActivity(intent);
     }
 
-    private final MediaPlayer player = new MediaPlayer();
-
     @Override
     public void onStart() {
         super.onStart();
 
-        player.start(getApplicationContext(), stream);
-        video.setPlayer(player.getPlayer());
+        Player player = playerViewModel.start(stream);
+        video.setPlayer(player);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        player.stop();
+        playerViewModel.stop();
     }
 
     /*

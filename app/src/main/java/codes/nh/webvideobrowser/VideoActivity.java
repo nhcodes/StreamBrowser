@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
 
 import org.json.JSONObject;
@@ -15,6 +17,8 @@ import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class VideoActivity extends AppCompatActivity {
+
+    private PlayerViewModel playerViewModel;
 
     private PlayerView video;
 
@@ -25,6 +29,8 @@ public class VideoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         hideSystemBars();
         setContentView(R.layout.activity_video);
+
+        playerViewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
 
         try {
             stream = Stream.fromJson(new JSONObject(getIntent().getStringExtra("stream")));
@@ -45,22 +51,19 @@ public class VideoActivity extends AppCompatActivity {
         });
     }
 
-
-    private final MediaPlayer player = new MediaPlayer();
-
     @Override
     public void onStart() {
         super.onStart();
 
-        player.start(getApplicationContext(), stream.getStreamUrl(), stream.getHeaders());
-        video.setPlayer(player.getPlayer());
+        Player player = playerViewModel.start(stream);
+        video.setPlayer(player);
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        player.stop();
+        playerViewModel.stop();
     }
 
     private void hideSystemBars() {
