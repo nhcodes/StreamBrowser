@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import codes.nh.webvideobrowser.utils.AppUtils;
+import codes.nh.webvideobrowser.utils.SubtitleUtils;
 import codes.nh.webvideobrowser.utils.UrlUtils;
 
 @Entity
@@ -138,11 +139,14 @@ public class Stream {
 
         List<MediaItem.SubtitleConfiguration> subtitles = new ArrayList<>();
         for (String subtitleUrl : subtitleUrls) {
+            String[] fileNameParts = UrlUtils.getFileNameFromUrl(subtitleUrl).split("\\.", 2);
+            String fileName = fileNameParts[0];
+            String extension = fileNameParts.length == 2 ? fileNameParts[1] : "";
+            String mime = SubtitleUtils.getSubtitleMimeTypeFromExtension(extension);
             MediaItem.SubtitleConfiguration subtitle = new MediaItem.SubtitleConfiguration
                     .Builder(Uri.parse(subtitleUrl))
-                    .setId("aaa")
-                    .setLabel("bbb")
-                    .setLanguage("ccc")
+                    .setLabel(fileName)
+                    .setMimeType(mime)
                     .build();
             subtitles.add(subtitle);
         }

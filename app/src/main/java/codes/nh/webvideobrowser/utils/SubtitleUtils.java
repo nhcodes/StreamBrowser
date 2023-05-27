@@ -1,5 +1,7 @@
 package codes.nh.webvideobrowser.utils;
 
+import androidx.media3.common.MimeTypes;
+
 import org.json.JSONArray;
 
 import java.io.ByteArrayOutputStream;
@@ -7,11 +9,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class SubtitleUtils {
+
+    public static Map<String, String> SUBTITLE_MIME_TYPES = Map.of(
+            "vtt", MimeTypes.TEXT_VTT,
+            "srt", MimeTypes.APPLICATION_SUBRIP,
+            "ttml", MimeTypes.APPLICATION_TTML,
+            "ssa", MimeTypes.TEXT_SSA,
+            "ass", MimeTypes.TEXT_SSA
+    );
+
+    //https://developer.android.com/guide/topics/media/exoplayer/supported-formats#standalone_subtitle_formats
+    public static String getSubtitleMimeTypeFromExtension(String extension) {
+        return SUBTITLE_MIME_TYPES.get(extension);
+    }
 
     public static JSONArray requestSubtitles(String query, String language) {
         try {
