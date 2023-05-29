@@ -79,7 +79,7 @@ public class AppUtils {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
-    //
+    //cast errors
 
     public static String getMediaErrorName(int error) {
         for (Field field : MediaError.DetailedErrorCode.class.getDeclaredFields()) {
@@ -98,11 +98,22 @@ public class AppUtils {
         return null;
     }
 
+    //intents
+
     public static void openFile(Context context, String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         context.startActivity(intent);
     }
+
+    public static void openShareDialog(Context context, String url) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, url);
+        context.startActivity(Intent.createChooser(intent, null));
+    }
+
+    //downloads
 
     public static void downloadFile(Context context, String url, Map<String, String> headers) {
         String fileName = UrlUtils.getFileNameFromUrl(url);
@@ -115,7 +126,7 @@ public class AppUtils {
         downloadManager.enqueue(download);
     }
 
-    //lists
+    //lists & maps
 
     public static JSONArray listToJson(List<String> list) {
         return new JSONArray(list);
@@ -132,8 +143,6 @@ public class AppUtils {
         }
         return list;
     }
-
-    //maps
 
     public static JSONObject mapToJson(Map<String, String> map) {
         return new JSONObject(map);

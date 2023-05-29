@@ -2,7 +2,6 @@ package codes.nh.webvideobrowser.fragments.stream;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -12,15 +11,31 @@ import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import codes.nh.webvideobrowser.MainViewModel;
 import codes.nh.webvideobrowser.PlayerViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.VideoActivity;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
+import codes.nh.webvideobrowser.fragments.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
+import codes.nh.webvideobrowser.utils.Async;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
+import codes.nh.webvideobrowser.utils.UrlUtils;
 
 public class StreamInfoFragment extends SheetFragment {
 
@@ -61,65 +76,42 @@ public class StreamInfoFragment extends SheetFragment {
 
         BottomNavigationView actionbar = view.findViewById(R.id.fragment_stream_info_actionbar);
         actionbar.setSelectedItemId(R.id.action_none);
-        actionbar.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                if (id == R.id.action_stream_share) {
-                    share(stream);
-                } else if (id == R.id.action_stream_download) {
-                    download(stream);
-                } else if (id == R.id.action_stream_cast) {
-                    cast(stream);
-                } else if (id == R.id.action_stream_play) {
-                    play(stream);
-                }
-
-                return false;
+        actionbar.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_stream_share) {
+                share(stream);
+            } else if (id == R.id.action_stream_download) {
+                download(stream);
+            } else if (id == R.id.action_stream_cast) {
+                cast(stream);
+            } else if (id == R.id.action_stream_play) {
+                play(stream);
             }
+            return false;
         });
 
-            /*
-            Async.execute(new Async.ResultTask<UrlUtils.HttpResponse>() {
+        checkStreamVariants(stream.getStreamUrl(), stream.getHeaders());
 
-                @Override
-                public UrlUtils.HttpResponse doAsync() {
-                    try {
-                        return UrlUtils.readUrl(stream.getStreamUrl(), stream.getHeaders());
-                    } catch (IOException e) {
-                        AppUtils.log("read stream info", e);
-                        return null;
-                    }
-                }
+        AppUtils.log("URL IS NOW " + stream.getStreamUrl());
+    }
 
-                @Override
-                public void doSync(UrlUtils.HttpResponse response) {
+    @Override
+    public void onStart() {
+        super.onStart();
 
-                    loader.setVisibility(View.GONE);
+        Player player = playerViewModel.start(stream);
+        video.setPlayer(player);
+    }
 
-                    if (response == null) {
-                        //sheetViewModel.open(new SheetRequest(StreamsFragment.class));
-                        return;
-                    }
+    @Override
+    public void onStop() {
+        super.onStop();
 
-                    boolean willWork = String.valueOf(response.code).startsWith("2")
-                            && response.headers.getOrDefault("Access-Control-Allow-Origin", "").contains("*");
-                    useProxyCheck.setChecked(!willWork);
-
-                    List<Variant> hlsVariants = readHlsMultivariantPlaylist(response.body, UrlUtils.getAddressWithoutFileName(stream.getStreamUrl()));
-                    if (!hlsVariants.isEmpty()) {
-                        openHlsVariantsDialog(stream, hlsVariants);
-                    }
-
-                }
-            }, 5000L);*/
+        playerViewModel.stop();
     }
 
     private void share(Stream stream) {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_TEXT, stream.getStreamUrl());
-        startActivity(Intent.createChooser(intent, null));
+        AppUtils.openShareDialog(requireContext(), stream.getStreamUrl());
     }
 
     private void download(Stream stream) {
@@ -142,78 +134,103 @@ public class StreamInfoFragment extends SheetFragment {
         startActivity(intent);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    //hls playlist variants
 
-        Player player = playerViewModel.start(stream);
-        video.setPlayer(player);
+    private void checkStreamVariants(String url, Map<String, String> headers) {
+        Async.execute(
+                () -> {
+                    try {
+
+                        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                        for (Map.Entry<String, String> entry : headers.entrySet()) {
+                            connection.setRequestProperty(entry.getKey(), entry.getValue());
+                        }
+                        connection.connect();
+
+                        boolean success = String.valueOf(connection.getResponseCode()).startsWith("2");
+                        boolean cors = connection.getHeaderField("Access-Control-Allow-Origin").contains("*");
+                        AppUtils.log("success=" + success + ", cors=" + cors);
+
+                        List<Variant> hlsVariants = readHlsMultivariantPlaylist(
+                                connection.getInputStream(),
+                                UrlUtils.getAddressWithoutFileName(stream.getStreamUrl())
+                        );
+                        return hlsVariants;
+
+                    } catch (Exception e) {
+                        AppUtils.log("checkStreamVariants()", e);
+                        return new ArrayList<Variant>();
+                    }
+                },
+                hlsVariants -> {
+                    if (!hlsVariants.isEmpty()) {
+                        openHlsVariantChooserDialog(hlsVariants, variant -> {
+                            Stream variantStream = new Stream(
+                                    variant.url,
+                                    stream.getSourceUrl(),
+                                    stream.getTitle(),
+                                    stream.getHeaders(),
+                                    stream.getThumbnailUrls(),
+                                    stream.getSubtitleUrls(),
+                                    stream.getStartTime()
+                            );
+                            streamViewModel.setInfoStream(variantStream);
+                            mainViewModel.openSheet(new SheetRequest(StreamInfoFragment.class));
+                        });
+                    }
+                }, 5000L);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
 
-        playerViewModel.stop();
-    }
-
-    /*
-
-    //hls playlist
-
-    private void openHlsVariantsDialog(Stream stream, List<Variant> variants) {
-        CharSequence[] items = variants.stream().map(v -> v.resolution + "\n" + v.info).toArray(CharSequence[]::new);
+    private void openHlsVariantChooserDialog(List<Variant> variants, Consumer<Variant> onChoose) {
+        CharSequence[] items = variants.stream().map(variant ->
+                variant.resolution + "\n" + variant.info
+        ).toArray(CharSequence[]::new);
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Choose stream")
-                .setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String url = variants.get(which).url; //todo improve
-                        Stream newStream = stream.clone(url);
-                        streamViewModel.setInfoStream(newStream);
-                        dialog.dismiss();
-                    }
+                .setItems(items, (dialog, index) -> {
+                    Variant variant = variants.get(index);
+                    onChoose.accept(variant);
+                    dialog.dismiss();
                 })
                 .show();
     }
 
-    //https://developer.apple.com/documentation/http_live_streaming/example_playlists_for_http_live_streaming/creating_a_multivariant_playlist
-    private List<Variant> readHlsMultivariantPlaylist(byte[] content, String directoryUrl) {
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(content);
-             InputStreamReader isr = new InputStreamReader(bais);
-             BufferedReader br = new BufferedReader(isr);) {
+    //https://developer.apple.com/documentation/http-live-streaming/creating-a-multivariant-playlist
+    private List<Variant> readHlsMultivariantPlaylist(InputStream inputStream, String directoryUrl) {
+        List<Variant> variants = new ArrayList<>();
 
-            List<Variant> variants = new ArrayList<>();
+        try (InputStreamReader streamReader = new InputStreamReader(inputStream);
+             BufferedReader reader = new BufferedReader(streamReader);) {
 
             String headerPrefix = "#EXTM3U";
-            int headerPrefixLength = headerPrefix.length();
-            char[] buffer = new char[headerPrefixLength];
-            br.read(buffer, 0, headerPrefixLength);
-            if (!new String(buffer).equals(headerPrefix)) {
+            String firstLine = reader.readLine();
+            if (!firstLine.equals(headerPrefix)) {
                 return variants;
             }
 
-            String prefix = "#EXT-X-STREAM-INF:";
-            int prefixLength = prefix.length();
+            String variantPrefix = "#EXT-X-STREAM-INF:";
+            int variantPrefixLength = variantPrefix.length();
+
+            Pattern resolutionPattern = Pattern.compile("RESOLUTION=(\\d+x\\d+)");
 
             String line;
-            while ((line = br.readLine()) != null) {
-                if (!line.startsWith(prefix)) {
+            while ((line = reader.readLine()) != null) {
+                if (!line.startsWith(variantPrefix)) {
                     continue;
                 }
 
                 Variant variant = new Variant();
 
-                String info = line.substring(prefixLength);
+                String info = line.substring(variantPrefixLength);
                 variant.info = info;
 
-                Pattern pattern = Pattern.compile("RESOLUTION=(\\d+x\\d+)");
-                Matcher matcher = pattern.matcher(info);
+                Matcher matcher = resolutionPattern.matcher(info);
                 if (matcher.find()) {
                     variant.resolution = matcher.group(1);
                 }
 
-                String url = br.readLine();
+                String url = reader.readLine();
                 if (!url.startsWith("http")) {
                     url = directoryUrl + url;
                 }
@@ -222,17 +239,15 @@ public class StreamInfoFragment extends SheetFragment {
                 variants.add(variant);
             }
 
-            return variants;
         } catch (IOException e) {
             AppUtils.log("readHlsMultivariantPlaylist()", e);
-            return new ArrayList<>();
         }
+
+        return variants;
     }
 
     private static class Variant {
         String url, info, resolution;
     }
-
-    */
 
 }

@@ -6,7 +6,6 @@
     android:orientation="vertical">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/fragment_bookmark_edit_input_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -15,6 +14,7 @@
         app:boxCornerRadiusTopStart="0dp">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fragment_bookmark_edit_input_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:imeOptions="actionDone"
@@ -25,13 +25,13 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/fragment_bookmark_edit_input_url"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:hint="@string/fragment_bookmark_edit_hint_url">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fragment_bookmark_edit_input_url"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:imeOptions="actionDone"

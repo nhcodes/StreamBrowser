@@ -22,6 +22,7 @@ import codes.nh.webvideobrowser.fragments.stream.StreamInfoFragment;
 import codes.nh.webvideobrowser.fragments.stream.StreamViewModel;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.RecyclerAdapter;
+import codes.nh.webvideobrowser.utils.SnackbarRequest;
 
 public class HistoryFragment extends SheetFragment {
 
@@ -56,12 +57,7 @@ public class HistoryFragment extends SheetFragment {
         streamViewModel = new ViewModelProvider(requireActivity()).get(StreamViewModel.class);
 
         FloatingActionButton clearButton = view.findViewById(R.id.fragment_history_button_clear);
-        clearButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clearHistory();
-            }
-        });
+        clearButton.setOnClickListener(v -> clearHistory());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setStackFromEnd(true);
@@ -79,7 +75,7 @@ public class HistoryFragment extends SheetFragment {
 
             @Override
             public void onLongClick(Stream stream) {
-                browserViewModel.setRequestLoadUrl(new BrowserRequest(stream.getSourceUrl()));
+                openStreamSourceUrl(stream);
             }
         });
     }
@@ -90,19 +86,14 @@ public class HistoryFragment extends SheetFragment {
         mainViewModel.openSheet(request);
     }
 
-    //database
-
-    private void removeHistory(Stream stream) {
-        historyViewModel.removeHistory(stream, success -> {
-            String text = success ? "remove success" : "remove error";
-            //mainViewModel.showSnackbar(text);
-        });
+    private void openStreamSourceUrl(Stream stream) {
+        browserViewModel.setRequestLoadUrl(new BrowserRequest(stream.getSourceUrl()));
     }
 
     private void clearHistory() {
         historyViewModel.clearHistory(success -> {
-            String text = success ? "clear success" : "clear error";
-            //mainViewModel.showSnackbar(text);
+            if (!success) mainViewModel.showSnackbar(new SnackbarRequest("clear error"));
         });
     }
+
 }

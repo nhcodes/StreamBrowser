@@ -2,15 +2,11 @@ package codes.nh.webvideobrowser.fragments.browser;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +16,7 @@ import androidx.mediarouter.app.MediaRouteButton;
 
 import com.google.android.gms.cast.framework.CastButtonFactory;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 
@@ -46,7 +43,7 @@ public class BrowserFragment extends Fragment {
 
     private LinearProgressIndicator progressBar;
 
-    private EditText urlInput;
+    private TextInputEditText urlInput;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -174,35 +171,15 @@ public class BrowserFragment extends Fragment {
         progressBar = view.findViewById(R.id.fragment_browser_loader);
 
         urlInput = view.findViewById(R.id.fragment_browser_input_url);
-        urlInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-                if (actionId != EditorInfo.IME_ACTION_DONE) {
-                    return false;
-                }
-
-                String query = view.getText().toString();
-                if (!query.startsWith("https://") && !query.startsWith("http://")) {
-                    if (query.contains(" ") || !query.contains(".")) {
-                        query = "http://google.com/search?q=" + query.replace(" ", "+");
-                    } else {
-                        query = "http://" + query;
-                    }
-                }
-
-                urlInput.clearFocus();
-                browserViewModel.setRequestLoadUrl(new BrowserRequest(query));//webView.loadUrl(query);
-                return false;
+        urlInput.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                openUrl(v.getText().toString());
             }
+            return false;
         });
 
         ImageButton backButton = view.findViewById(R.id.fragment_browser_button_back);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openBrowserHistoryDialog(view);
-            }
-        });
+        backButton.setOnClickListener(v -> openBrowserHistoryDialog(v));
 
         MediaRouteButton mediaRouteButton = view.findViewById(R.id.media_route_button);
         CastButtonFactory.setUpMediaRouteButton(requireContext().getApplicationContext(), mediaRouteButton);
@@ -221,7 +198,23 @@ public class BrowserFragment extends Fragment {
         webView.onResume();
     }
 
-    //dialog
+    private void openUrl(String query) {
+        if (!query.startsWith("https://") && !query.startsWith("http://")) {
+            if (query.contains(" ") || !query.contains(".")) {
+                query = "http://google.com/search?q=" + query.replace(" ", "+");
+            } else {
+                query = "http://" + query;
+            }
+        }
+        urlInput.clearFocus();
+        browserViewModel.setRequestLoadUrl(new BrowserRequest(query));//webView.loadUrl(query);
+    }
+
+    private void addDestination(BrowserDestination destination) {
+        browserViewModel.addDestination(destination, success -> {
+            if (!success) AppUtils.log("error while adding destination");
+        });
+    }
 
     private void openBrowserHistoryDialog(View view) {
         List<BrowserDestination> allDestinations = browserViewModel.getDestinationList().getValue();
@@ -240,23 +233,13 @@ public class BrowserFragment extends Fragment {
             i++;
         }
 
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                BrowserDestination destination = destinations.get(item.getItemId());
-                browserViewModel.goBack(destination);
-                return true;
-            }
+        popup.setOnMenuItemClickListener(item -> {
+            BrowserDestination destination = destinations.get(item.getItemId());
+            browserViewModel.goBack(destination);
+            return true;
         });
 
         popup.show();
     }
 
-    private void addDestination(BrowserDestination destination) {
-        browserViewModel.addDestination(destination, success -> {
-            if (!success) {
-                AppUtils.log("error while adding destination");
-            }
-        });
-    }
 }

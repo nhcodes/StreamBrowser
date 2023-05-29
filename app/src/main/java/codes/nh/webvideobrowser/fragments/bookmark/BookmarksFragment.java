@@ -77,8 +77,6 @@ public class BookmarksFragment extends SheetFragment {
         });
     }
 
-    //database
-
     private void addBookmark() {
         BrowserDestination destination = browserViewModel.getDestination(0);
         if (destination == null) {
@@ -102,4 +100,5 @@ public class BookmarksFragment extends SheetFragment {
         SheetRequest request = new SheetRequest(BookmarkEditFragment.class);
         mainViewModel.openSheet(request);
     }
+
 }

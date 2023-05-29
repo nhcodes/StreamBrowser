@@ -2,14 +2,13 @@ package codes.nh.webvideobrowser.fragments.bookmark;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.textfield.TextInputEditText;
 
 import codes.nh.webvideobrowser.MainViewModel;
 import codes.nh.webvideobrowser.R;
@@ -38,12 +37,10 @@ public class BookmarkEditFragment extends SheetFragment {
 
         Bookmark bookmark = bookmarkViewModel.getEditBookmark();
 
-        TextInputLayout titleInputLayout = view.findViewById(R.id.fragment_bookmark_edit_input_title);
-        EditText titleInput = titleInputLayout.getEditText();
+        TextInputEditText titleInput = view.findViewById(R.id.fragment_bookmark_edit_input_title);
         titleInput.setText(bookmark.getTitle());
 
-        TextInputLayout urlInputLayout = view.findViewById(R.id.fragment_bookmark_edit_input_url);
-        EditText urlInput = urlInputLayout.getEditText();
+        TextInputEditText urlInput = view.findViewById(R.id.fragment_bookmark_edit_input_url);
         urlInput.setText(bookmark.getUrl());
 
         MaterialButton removeButton = view.findViewById(R.id.fragment_bookmark_edit_button_remove);
@@ -78,4 +75,5 @@ public class BookmarkEditFragment extends SheetFragment {
         });
         close();
     }
+
 }

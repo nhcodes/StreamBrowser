@@ -37,16 +37,13 @@ public class SettingsFragment extends SheetFragment {
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         settingsManager = new SettingsManager(getApplicationContext());
-        settingsManager.registerListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (key.equalsIgnoreCase("preference_desktop_mode")) {
-                    browserViewModel.setDesktopMode(settingsManager.getDesktopMode());
-                } else if (key.equalsIgnoreCase("preference_block_redirects")) {
-                    //webView.setBlockRedirects(settingsManager.getBlockRedirects());
-                } else if (key.equalsIgnoreCase("preference_skip_time")) {
-                    mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.toast_restart_to_apply)));
-                }
+        settingsManager.registerListener((sharedPreferences, key) -> {
+            if (key.equalsIgnoreCase("preference_desktop_mode")) {
+                browserViewModel.setDesktopMode(settingsManager.getDesktopMode());
+            } else if (key.equalsIgnoreCase("preference_block_redirects")) {
+
+            } else if (key.equalsIgnoreCase("preference_skip_time")) {
+                mainViewModel.showSnackbar(new SnackbarRequest(getString(R.string.toast_restart_to_apply)));
             }
         });
     }
@@ -56,4 +53,5 @@ public class SettingsFragment extends SheetFragment {
         super.onDestroy();
         settingsManager.unregisterListener();
     }
+
 }
