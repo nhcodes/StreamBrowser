@@ -1,8 +1,11 @@
 package codes.nh.webvideobrowser.fragments.stream;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -11,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-import codes.nh.webvideobrowser.HomeActivity;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import codes.nh.webvideobrowser.MainViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
@@ -52,13 +57,8 @@ public class StreamsFragment extends SheetFragment {
         streamViewModel = new ViewModelProvider(requireActivity()).get(StreamViewModel.class);
 
         ExtendedFloatingActionButton streamFileButton = view.findViewById(R.id.fragment_streams_button_stream_file);
-        streamFileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //browserViewModel.clearStreams();
-                HomeActivity activity = (HomeActivity) requireActivity();
-                activity.getFilePicker().launch();
-            }
+        streamFileButton.setOnClickListener(v -> {
+            openFilePicker();
         });
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
@@ -87,4 +87,36 @@ public class StreamsFragment extends SheetFragment {
         SheetRequest request = new SheetRequest(StreamInfoFragment.class);
         mainViewModel.openSheet(request);
     }
+
+    private ActivityResultLauncher<String> launcher = null;
+
+    private void openFilePicker() {
+        launcher = AppUtils.registerActivityResultLauncher(
+                requireActivity(),
+                new ActivityResultContracts.GetContent(), uri -> {
+                    playLocalFile(uri);
+                    launcher.unregister();
+                    launcher = null;
+                }
+        );
+        String mimeType = "*/*";
+        launcher.launch(mimeType);
+    }
+
+    private void playLocalFile(Uri uri) {
+        if (uri == null) return;
+        String fileName = AppUtils.getFileNameFromUri(getApplicationContext(), uri);
+        Stream stream = new Stream(
+                uri.toString(),
+                uri.toString(),
+                fileName,
+                new HashMap<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                0L
+        );
+        stream.setUseProxy(true);
+        streamViewModel.play(new StreamRequest(stream));
+    }
+
 }

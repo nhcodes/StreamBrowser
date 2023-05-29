@@ -13,6 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.activity.ComponentActivity;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+
 import com.google.android.gms.cast.MediaError;
 
 import org.json.JSONArray;
@@ -30,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import codes.nh.webvideobrowser.R;
 
@@ -172,4 +178,16 @@ public class AppUtils {
         }
         return null;
     }
+
+    //activity result
+
+    public static <I, O> ActivityResultLauncher<I> registerActivityResultLauncher(
+            ComponentActivity activity,
+            ActivityResultContract<I, O> contract,
+            ActivityResultCallback<O> callback
+    ) {
+        String key = UUID.randomUUID().toString();
+        return activity.getActivityResultRegistry().register(key, contract, callback);
+    }
+
 }

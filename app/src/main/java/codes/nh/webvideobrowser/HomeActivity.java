@@ -3,7 +3,6 @@ package codes.nh.webvideobrowser;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -24,9 +23,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import codes.nh.webvideobrowser.fragments.bookmark.BookmarksFragment;
 import codes.nh.webvideobrowser.fragments.browser.BrowserViewModel;
 import codes.nh.webvideobrowser.fragments.cast.CastFullControllerFragment;
@@ -43,7 +39,6 @@ import codes.nh.webvideobrowser.fragments.stream.Stream;
 import codes.nh.webvideobrowser.fragments.stream.StreamViewModel;
 import codes.nh.webvideobrowser.fragments.stream.StreamsFragment;
 import codes.nh.webvideobrowser.utils.AppUtils;
-import codes.nh.webvideobrowser.utils.FilePicker;
 import codes.nh.webvideobrowser.utils.SnackbarRequest;
 
 public class HomeActivity extends AppCompatActivity {
@@ -97,8 +92,6 @@ public class HomeActivity extends AppCompatActivity {
     private FloatingActionButton streamsButton;
 
     //private FragmentContainerView miniControllerFragment;
-
-    private FilePicker filePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,9 +210,6 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         getOnBackPressedDispatcher().addCallback(backPressedCallback);
-
-        filePicker = new FilePicker(this);
-        filePicker.register(this::onPickFile);
 
         castViewModel.getCastManager().startSessionListener();
     }
@@ -416,25 +406,4 @@ public class HomeActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    //file picker
-
-    public FilePicker getFilePicker() {
-        return filePicker;
-    }
-
-    public void onPickFile(Uri uri) {
-        if (uri == null) return;
-        String fileName = AppUtils.getFileNameFromUri(getApplicationContext(), uri);
-        Stream stream = new Stream(
-                uri.toString(),
-                uri.toString(),
-                fileName,
-                new HashMap<>(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                0L
-        );
-        stream.setUseProxy(true);
-        playStream(stream);
-    }
 }
