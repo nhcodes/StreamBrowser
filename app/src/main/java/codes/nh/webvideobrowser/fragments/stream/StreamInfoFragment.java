@@ -90,8 +90,6 @@ public class StreamInfoFragment extends SheetFragment {
         });
 
         checkStreamVariants(stream.getStreamUrl(), stream.getHeaders());
-
-        AppUtils.log("URL IS NOW " + stream.getStreamUrl());
     }
 
     @Override
@@ -143,14 +141,19 @@ public class StreamInfoFragment extends SheetFragment {
                         HttpURLConnection connection = UrlUtils.connectToUrl(url, headers);
 
                         boolean success = String.valueOf(connection.getResponseCode()).startsWith("2");
-                        boolean cors = connection.getHeaderField("Access-Control-Allow-Origin").contains("*");
+                        String corsHeader = connection.getHeaderField("Access-Control-Allow-Origin");
+                        boolean cors = corsHeader != null && corsHeader.contains("*");
                         AppUtils.log("success=" + success + ", cors=" + cors);
 
-                        List<Variant> hlsVariants = readHlsMultivariantPlaylist(
+
+                        if(!UrlUtils.getFileNameFromUrl(url).contains(".m3u8")) {
+                            return new ArrayList<Variant>();
+                        }
+
+                        return readHlsMultivariantPlaylist(
                                 connection.getInputStream(),
                                 UrlUtils.getAddressWithoutFileName(stream.getStreamUrl())
                         );
-                        return hlsVariants;
 
                     } catch (Exception e) {
                         AppUtils.log("checkStreamVariants()", e);
