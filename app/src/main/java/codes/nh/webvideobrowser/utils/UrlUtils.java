@@ -2,6 +2,9 @@ package codes.nh.webvideobrowser.utils;
 
 import android.net.Uri;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 
 public class UrlUtils {
@@ -34,17 +37,13 @@ public class UrlUtils {
         return url.substring(0, url.indexOf(getFileNameFromUrl(url)));
     }
 
-    public static String getHeaderValue(Map<String, String> headers, String key) {
-        return headers.entrySet()
-                .stream()
-                .filter(e -> e.getKey().equalsIgnoreCase(key))
-                .map(e -> e.getValue())
-                .findFirst()
-                .orElse(null);
+    public static HttpURLConnection connectToUrl(String url, Map<String, String> headers) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            connection.setRequestProperty(entry.getKey(), entry.getValue());
+        }
+        connection.connect();
+        return connection;
     }
 
-    public static String getFaviconUrl(String url) {
-        String hostName = UrlUtils.getHostFromURL(url);
-        return "https://www.google.com/s2/favicons?sz=64&domain=" + hostName;
-    }
 }

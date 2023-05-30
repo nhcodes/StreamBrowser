@@ -66,16 +66,12 @@ public abstract class HttpServer {
         return ips.get(0);
     }
 
-    public String getLocalAddress() {
-        return "http://localhost:" + port + "/";
-    }
-
-    public String getGlobalAddress() {
+    public String getIpAddress() {
         return "http://" + ip + ":" + port + "/";
     }
 
     public String getProxyUrl(String url) {
-        return getGlobalAddress() + UrlUtils.getFileNameFromUrl(url);
+        return getIpAddress() + UrlUtils.getFileNameFromUrl(url);
     }
 
     public void setStartListener(Runnable startListener) {
@@ -95,7 +91,7 @@ public abstract class HttpServer {
             startListener.run();
             return;
         }
-        AppUtils.log("starting server @ " + getGlobalAddress());
+        AppUtils.log("starting server @ " + getIpAddress());
         new Thread(() -> handleServer()).start();
     }
 
@@ -209,8 +205,7 @@ public abstract class HttpServer {
 
     //write
 
-    private void writeResponse(OutputStream os, HttpResponse response) throws Exception {
-        HttpStatus status = HttpStatus.fromCode(response.statusCode);
+    private void writeResponse(OutputStream outputStream, HttpResponse response) throws Exception {
 
         if (response.length != null) {
 
@@ -222,16 +217,16 @@ public abstract class HttpServer {
         response.headers.put("Access-Control-Allow-Origin", "*");
 
         StringBuilder headersBuilder = new StringBuilder();
-        headersBuilder.append(status.getResponseLine()).append("\r\n");
+        headersBuilder.append(response.status.getResponseLine()).append("\r\n");
         for (Map.Entry<String, String> header : response.headers.entrySet()) {
             headersBuilder.append(header.getKey()).append(": ").append(header.getValue()).append("\r\n");
         }
         headersBuilder.append("\r\n");
         byte[] headers = headersBuilder.toString().getBytes();
 
-        os.write(headers);
-        AppUtils.copyTo(response.content, os);
-        os.flush();
+        outputStream.write(headers);
+        AppUtils.copyTo(response.content, outputStream);
+        outputStream.flush();
     }
 
 }

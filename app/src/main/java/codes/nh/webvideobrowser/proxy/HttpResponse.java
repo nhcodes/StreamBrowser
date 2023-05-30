@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class HttpResponse {
 
-    int statusCode;
+    HttpStatus status;
 
     InputStream content;
 
@@ -14,19 +14,19 @@ public class HttpResponse {
 
     Integer length = null;
 
-    public HttpResponse(int statusCode, InputStream content, Map<String, String> headers) {
-        this.statusCode = statusCode;
+    public HttpResponse(HttpStatus status, InputStream content, Map<String, String> headers) {
+        this.status = status;
         this.content = content;
         this.headers = headers;
     }
 
-    public HttpResponse(int statusCode, byte[] content, Map<String, String> headers) {
-        this(statusCode, new ByteArrayInputStream(content), headers);
+    public HttpResponse(HttpStatus status, byte[] content, Map<String, String> headers) {
+        this(status, new ByteArrayInputStream(content), headers);
         length = content.length;
     }
 
-    public HttpResponse(int statusCode, String content, Map<String, String> headers) {
-        this(statusCode, content.getBytes(), headers);
+    public HttpResponse(HttpStatus status, String content, Map<String, String> headers) {
+        this(status, content.getBytes(), headers);
         length = content.length();
     }
 

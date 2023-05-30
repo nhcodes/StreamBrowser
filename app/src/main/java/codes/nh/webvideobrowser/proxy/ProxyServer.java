@@ -9,15 +9,12 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.UrlUtils;
@@ -45,10 +42,10 @@ public class ProxyServer extends HttpServer {
     public HttpResponse handleRequest(String path, int id) throws Exception {
 
         if (path.equals("")) {
-            return new HttpResponse(200, "proxy server is running", new HashMap<>());
+            return new HttpResponse(HttpStatus.OK, "proxy server is running", new HashMap<>());
         }
 
-        String fileName = UrlUtils.getFileNameFromUrl(getLocalAddress() + path);
+        String fileName = UrlUtils.getFileNameFromUrl(getIpAddress() + path);
         String query = path.replace(fileName, "");
 
         Pair<String, Map<String, String>> decodedQuery = getDecodedQuery(query);
@@ -74,7 +71,7 @@ public class ProxyServer extends HttpServer {
 
         } else { //remote url
 
-            HttpResponse remoteResponse = pipe(remoteUrl, remoteRequestHeaders);
+            HttpURLConnection connection = UrlUtils.connectToUrl(remoteUrl, remoteRequestHeaders);
 
             if (fileName.contains(".m3u8")) {
 
@@ -85,12 +82,12 @@ public class ProxyServer extends HttpServer {
                 }*/
 
                 String hostName = UrlUtils.getAddressWithoutFileName(remoteUrl);
-                String playlist = convertHlsPlayList(remoteResponse.content, remoteRequestHeaders, hostName);
+                String playlist = convertHlsPlayList(connection.getInputStream(), remoteRequestHeaders, hostName);
                 responseContent = new ByteArrayInputStream(playlist.getBytes());
 
             } else {
 
-                responseContent = remoteResponse.content;
+                responseContent = connection.getInputStream();
 
             }
 
@@ -98,7 +95,7 @@ public class ProxyServer extends HttpServer {
 
         }
 
-        return new HttpResponse(200, responseContent, responseHeaders);
+        return new HttpResponse(HttpStatus.OK, responseContent, responseHeaders);
 
     }
 
@@ -172,20 +169,6 @@ public class ProxyServer extends HttpServer {
 
     private String decodeBase64(String in) {
         return new String(Base64.decode(in.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE | Base64.NO_WRAP));
-    }
-
-    private HttpResponse pipe(String url, Map<String, String> requestHeaders) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        for (Map.Entry<String, String> entry : requestHeaders.entrySet()) {
-            connection.setRequestProperty(entry.getKey(), entry.getValue());
-        }
-        connection.connect();
-        HttpResponse response = new HttpResponse(
-                connection.getResponseCode(),
-                connection.getInputStream(),
-                connection.getHeaderFields().entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().get(0)))
-        );
-        return response;
     }
 
 }

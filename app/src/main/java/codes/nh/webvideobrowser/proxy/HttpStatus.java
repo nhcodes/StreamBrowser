@@ -3,7 +3,8 @@ package codes.nh.webvideobrowser.proxy;
 public enum HttpStatus {
 
     OK(200, "OK"),
-    BAD_REQUEST(400, "Bad Request");
+    BAD_REQUEST(400, "Bad Request"),
+    INTERVAL_SERVER_ERROR(500, "Internal Server Error");
 
     final int code;
 
@@ -18,12 +19,4 @@ public enum HttpStatus {
         return "HTTP/1.1 " + code + " " + message;
     }
 
-    public static HttpStatus fromCode(int code) {
-        for (HttpStatus status : values()) {
-            if (status.code == code) {
-                return status;
-            }
-        }
-        return null;
-    }
 }

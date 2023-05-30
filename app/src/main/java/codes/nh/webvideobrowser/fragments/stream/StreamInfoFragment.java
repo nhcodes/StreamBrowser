@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -141,11 +140,7 @@ public class StreamInfoFragment extends SheetFragment {
                 () -> {
                     try {
 
-                        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                        for (Map.Entry<String, String> entry : headers.entrySet()) {
-                            connection.setRequestProperty(entry.getKey(), entry.getValue());
-                        }
-                        connection.connect();
+                        HttpURLConnection connection = UrlUtils.connectToUrl(url, headers);
 
                         boolean success = String.valueOf(connection.getResponseCode()).startsWith("2");
                         boolean cors = connection.getHeaderField("Access-Control-Allow-Origin").contains("*");
