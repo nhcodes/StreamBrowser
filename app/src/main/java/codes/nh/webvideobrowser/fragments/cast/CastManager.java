@@ -99,7 +99,7 @@ public class CastManager {
             newHeaders.put("Referer", stream.getHeaders().get("Referer"));
             newHeaders.put("Origin", stream.getHeaders().get("Origin"));
             AppUtils.log("stream headers: " + AppUtils.mapToJson(newHeaders));
-            String proxyUrl = proxyServer.getProxyUrl(url) + proxyServer.getEncodedQuery(url, newHeaders);
+            String proxyUrl = proxyServer.convertToProxyUrl(url, newHeaders);
             startProxyServer(() -> {
                 Async.executeOnMainThread(() -> {
                     loadStream(proxyUrl, stream);
@@ -162,10 +162,8 @@ public class CastManager {
 
     private void startProxyServer(Runnable onStart) {
         proxyServer.setStartListener(onStart);
-        proxyServer.setUpdateListener(() -> {
-        });
-        proxyServer.setStopListener(() -> {
-        });
+        /*proxyServer.setUpdateListener(() -> {});
+        proxyServer.setStopListener(() -> {});*/
         proxyServer.startProxy();
     }
 

@@ -5,19 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.Async;
-import codes.nh.webvideobrowser.utils.UrlUtils;
 
 public abstract class HttpServer {
 
@@ -27,63 +20,14 @@ public abstract class HttpServer {
 
     private final int port;
 
-    private final String ip;
-
     private ServerSocket serverSocket;
-
-    private Runnable startListener, updateListener, stopListener;
 
     public HttpServer(int port) {
         this.port = port;
-        this.ip = loadLocalNetworkIp();
     }
 
-    private String loadLocalNetworkIp() {
-        List<String> ips = new ArrayList<>();
-
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-                while (inetAddresses.hasMoreElements()) {
-                    String address = inetAddresses.nextElement().getHostAddress();
-                    if (address != null && address.startsWith("192.")) {
-                        ips.add(address);
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            AppUtils.log("NetworkInterface.getNetworkInterfaces", e);
-        }
-
-        if (ips.size() != 1) { //todo
-            AppUtils.log("ips.size() != 1: [" + String.join(", ", ips) + "]");
-            AppUtils.log("using localhost address (won't work)");
-            return "127.0.0.1";
-        }
-
-        return ips.get(0);
-    }
-
-    public String getIpAddress() {
-        return "http://" + ip + ":" + port + "/";
-    }
-
-    public String getProxyUrl(String url) {
-        return getIpAddress() + UrlUtils.getFileNameFromUrl(url);
-    }
-
-    public void setStartListener(Runnable startListener) {
-        this.startListener = startListener;
-    }
-
-    public void setUpdateListener(Runnable updateListener) {
-        this.updateListener = updateListener;
-    }
-
-    public void setStopListener(Runnable stopListener) {
-        this.stopListener = stopListener;
+    public int getPort() {
+        return port;
     }
 
     public void start() {
@@ -91,7 +35,7 @@ public abstract class HttpServer {
             startListener.run();
             return;
         }
-        AppUtils.log("starting server @ " + getIpAddress());
+        AppUtils.log("starting server at port " + port);
         new Thread(() -> handleServer()).start();
     }
 
@@ -136,8 +80,6 @@ public abstract class HttpServer {
             stopListener.run();
         }
     }
-
-    //client
 
     private void handleClient(Socket client, int id) {
         try (client;
@@ -227,6 +169,26 @@ public abstract class HttpServer {
         outputStream.write(headers);
         AppUtils.copyTo(response.content, outputStream);
         outputStream.flush();
+    }
+
+    //listeners
+
+    private Runnable startListener = () -> {};
+
+    private Runnable updateListener = () -> {};
+
+    private Runnable stopListener = () -> {};
+
+    public void setStartListener(Runnable startListener) {
+        this.startListener = startListener;
+    }
+
+    public void setUpdateListener(Runnable updateListener) {
+        this.updateListener = updateListener;
+    }
+
+    public void setStopListener(Runnable stopListener) {
+        this.stopListener = stopListener;
     }
 
 }
