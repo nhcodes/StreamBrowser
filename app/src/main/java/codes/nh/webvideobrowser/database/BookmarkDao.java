@@ -9,7 +9,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import codes.nh.webvideobrowser.fragments.bookmark.Bookmark;
+import codes.nh.webvideobrowser.screens.bookmark.Bookmark;
 
 @Dao
 public interface BookmarkDao {

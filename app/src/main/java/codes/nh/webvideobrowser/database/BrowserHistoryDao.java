@@ -8,7 +8,7 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import codes.nh.webvideobrowser.fragments.browser.BrowserDestination;
+import codes.nh.webvideobrowser.screens.browser.BrowserDestination;
 
 @Dao
 public interface BrowserHistoryDao {

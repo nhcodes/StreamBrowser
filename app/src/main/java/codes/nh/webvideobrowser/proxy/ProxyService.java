@@ -12,7 +12,7 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-import codes.nh.webvideobrowser.HomeActivity;
+import codes.nh.webvideobrowser.screens.main.MainActivity;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
@@ -96,8 +96,8 @@ public class ProxyService extends Service {
     }
 
     private Notification createNotification(String notificationText) {
-        Intent startHomeActivityIntent = new Intent(getApplicationContext(), HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, startHomeActivityIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+        Intent startMainActivityIntent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, startMainActivityIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
         Notification.Builder notificationBuilder = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name))

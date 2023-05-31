@@ -7,9 +7,9 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import codes.nh.webvideobrowser.fragments.bookmark.Bookmark;
-import codes.nh.webvideobrowser.fragments.browser.BrowserDestination;
-import codes.nh.webvideobrowser.fragments.stream.Stream;
+import codes.nh.webvideobrowser.screens.bookmark.Bookmark;
+import codes.nh.webvideobrowser.screens.browser.BrowserDestination;
+import codes.nh.webvideobrowser.screens.stream.Stream;
 
 @Database(
         entities = {Bookmark.class, Stream.class, BrowserDestination.class},

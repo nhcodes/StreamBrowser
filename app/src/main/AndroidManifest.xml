@@ -13,7 +13,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".HomeActivity"
+            android:name=".screens.main.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
@@ -25,7 +25,7 @@
         </activity>
 
         <activity
-            android:name=".VideoActivity"
+            android:name=".screens.player.PlayerActivity"
             android:screenOrientation="landscape" />
 
         <service
@@ -34,7 +34,7 @@
 
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="codes.nh.webvideobrowser.fragments.cast.CastOptionsProvider" />
+            android:value="codes.nh.webvideobrowser.screens.cast.CastOptionsProvider" />
 
     </application>
 

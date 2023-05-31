@@ -13,6 +13,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import codes.nh.webvideobrowser.utils.async.Async;
+
 public class ImageUtils {
 
     private static LruCache<String, Bitmap> BITMAP_CACHE;

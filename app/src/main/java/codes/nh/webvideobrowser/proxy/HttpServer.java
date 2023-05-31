@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import codes.nh.webvideobrowser.utils.AppUtils;
-import codes.nh.webvideobrowser.utils.Async;
+import codes.nh.webvideobrowser.utils.async.Async;
 
 public abstract class HttpServer {
 

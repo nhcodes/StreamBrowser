@@ -12,7 +12,7 @@
 
     <string name="toast_close_app">Click again to close app</string>
 
-    <string name="toast_restart_to_apply">Restart app to apply skip time for notification</string>
+    <string name="toast_restart_to_apply">Restart app to apply changes</string>
 
     <string name="toast_bookmark_no_page">No page loaded</string>
 

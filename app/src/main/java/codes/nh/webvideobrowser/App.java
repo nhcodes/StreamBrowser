@@ -4,7 +4,7 @@ import android.app.Application;
 
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.ImageUtils;
-import codes.nh.webvideobrowser.utils.TimeoutHandler;
+import codes.nh.webvideobrowser.utils.async.TimeoutHandler;
 
 public class App extends Application {
 
