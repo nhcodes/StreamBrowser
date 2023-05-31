@@ -22,7 +22,6 @@ import codes.nh.webvideobrowser.fragments.stream.StreamInfoFragment;
 import codes.nh.webvideobrowser.fragments.stream.StreamViewModel;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.RecyclerAdapter;
-import codes.nh.webvideobrowser.utils.SnackbarRequest;
 
 public class HistoryFragment extends SheetFragment {
 
@@ -91,8 +90,7 @@ public class HistoryFragment extends SheetFragment {
     }
 
     private void clearHistory() {
-        historyViewModel.clearHistory(success -> {
-            if (!success) mainViewModel.showSnackbar(new SnackbarRequest("clear error"));
+        historyViewModel.clearHistory(changed -> {
         });
     }
 

@@ -84,8 +84,7 @@ public class BookmarksFragment extends SheetFragment {
             return;
         }
         Bookmark bookmark = new Bookmark(destination.getUrl(), destination.getTitle(), destination.getFavicon());
-        bookmarkViewModel.addBookmark(bookmark, success -> {
-            if (!success) mainViewModel.showSnackbar(new SnackbarRequest("add error"));
+        bookmarkViewModel.addBookmark(bookmark, rowId -> {
         });
     }
 

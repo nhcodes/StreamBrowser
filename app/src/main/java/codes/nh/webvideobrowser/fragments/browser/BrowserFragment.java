@@ -211,8 +211,7 @@ public class BrowserFragment extends Fragment {
     }
 
     private void addDestination(BrowserDestination destination) {
-        browserViewModel.addDestination(destination, success -> {
-            if (!success) AppUtils.log("error while adding destination");
+        browserViewModel.addDestination(destination, rowId -> {
         });
     }
 

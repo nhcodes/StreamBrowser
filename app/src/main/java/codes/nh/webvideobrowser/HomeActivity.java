@@ -354,8 +354,7 @@ public class HomeActivity extends AppCompatActivity {
             SheetRequest request = new SheetRequest(CastFullControllerFragment.class);
             mainViewModel.openSheet(request);
 
-            historyViewModel.addHistory(stream, success -> {
-                if (!success) AppUtils.log("history insert error");
+            historyViewModel.addHistory(stream, rowId -> {
             });
         }
 
@@ -378,8 +377,7 @@ public class HomeActivity extends AppCompatActivity {
             long streamPosition = remoteMediaClient.isLiveStream() ? -1 : remoteMediaClient.getApproximateStreamPosition();
             stream.setStartTime(streamPosition);
 
-            historyViewModel.addHistory(stream, success -> { //todo updateHistory
-                if (!success) AppUtils.log("history update error");
+            historyViewModel.addHistory(stream, rowId -> { //todo updateHistory
             });
 
         }

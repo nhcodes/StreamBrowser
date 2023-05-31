@@ -13,7 +13,7 @@ import codes.nh.webvideobrowser.fragments.browser.BrowserDestination;
 @Dao
 public interface BrowserHistoryDao {
 
-    @Query("SELECT * FROM BrowserDestination ORDER BY time DESC LIMIT 10")
+    @Query("SELECT * FROM BrowserDestination ORDER BY time DESC")
     LiveData<List<BrowserDestination>> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

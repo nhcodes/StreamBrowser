@@ -32,25 +32,16 @@ public class BookmarkViewModel extends AndroidViewModel {
         return bookmarkList;
     }
 
-    public void addBookmark(Bookmark bookmark, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> bookmarkDao.insert(bookmark),
-                (row) -> callback.accept(row != -1)
-        );
+    public void addBookmark(Bookmark bookmark, Consumer<Long> callback) {
+        Async.execute(() -> bookmarkDao.insert(bookmark), callback);
     }
 
-    public void updateBookmark(Bookmark bookmark, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> bookmarkDao.update(bookmark),
-                (changed) -> callback.accept(changed > 0)
-        );
+    public void updateBookmark(Bookmark bookmark, Consumer<Integer> callback) {
+        Async.execute(() -> bookmarkDao.update(bookmark), callback);
     }
 
-    public void removeBookmark(Bookmark bookmark, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> bookmarkDao.delete(bookmark),
-                (changed) -> callback.accept(changed > 0)
-        );
+    public void removeBookmark(Bookmark bookmark, Consumer<Integer> callback) {
+        Async.execute(() -> bookmarkDao.delete(bookmark), callback);
     }
 
     //edit bookmark
@@ -64,4 +55,5 @@ public class BookmarkViewModel extends AndroidViewModel {
     public Bookmark getEditBookmark() {
         return editBookmark;
     }
+
 }

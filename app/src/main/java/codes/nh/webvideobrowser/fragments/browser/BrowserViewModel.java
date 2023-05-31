@@ -120,31 +120,21 @@ public class BrowserViewModel extends AndroidViewModel {
 
     public void goBack(BrowserDestination destination) {
         deleteDestinationsAfter(destination, success -> {
-            if (!success) AppUtils.log("delete error");
         });
-
         BrowserRequest browserRequest = new BrowserRequest(destination.getUrl());
         setRequestLoadUrl(browserRequest);
     }
 
-    public void addDestination(BrowserDestination destination, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> historyDao.insert(destination),
-                (row) -> callback.accept(row != -1)
-        );
+    public void addDestination(BrowserDestination destination, Consumer<Long> callback) {
+        Async.execute(() -> historyDao.insert(destination), callback);
     }
 
-    private void deleteDestinationsAfter(BrowserDestination destination, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> historyDao.deleteAfter(destination.getTime()),
-                (changed) -> callback.accept(changed > 0)
-        );
+    private void deleteDestinationsAfter(BrowserDestination destination, Consumer<Integer> callback) {
+        Async.execute(() -> historyDao.deleteAfter(destination.getTime()), callback);
     }
 
     private void clearDestinations(int keepCount, Consumer<Integer> callback) {
-        Async.execute(
-                () -> historyDao.clear(keepCount),
-                (changed) -> callback.accept(changed)
-        );
+        Async.execute(() -> historyDao.clear(keepCount), callback);
     }
+
 }

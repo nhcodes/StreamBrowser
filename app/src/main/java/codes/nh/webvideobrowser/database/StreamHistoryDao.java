@@ -24,12 +24,6 @@ public interface StreamHistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(Stream stream);
 
-    @Update
-    int update(Stream stream);
-
-    @Delete
-    int delete(Stream stream);
-
     @Query("DELETE FROM Stream")
     int deleteAll();
 

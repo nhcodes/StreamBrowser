@@ -14,7 +14,6 @@ import codes.nh.webvideobrowser.MainViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.fragments.sheet.SheetFragment;
 import codes.nh.webvideobrowser.utils.AppUtils;
-import codes.nh.webvideobrowser.utils.SnackbarRequest;
 
 public class BookmarkEditFragment extends SheetFragment {
 
@@ -63,15 +62,13 @@ public class BookmarkEditFragment extends SheetFragment {
     private void updateBookmark(Bookmark bookmark, String url, String title) {
         bookmark.setUrl(url);
         bookmark.setTitle(title);
-        bookmarkViewModel.updateBookmark(bookmark, success -> {
-            if (!success) mainViewModel.showSnackbar(new SnackbarRequest("update error"));
+        bookmarkViewModel.updateBookmark(bookmark, changed -> {
         });
         close();
     }
 
     private void removeBookmark(Bookmark bookmark) {
-        bookmarkViewModel.removeBookmark(bookmark, success -> {
-            if (!success) mainViewModel.showSnackbar(new SnackbarRequest("remove error"));
+        bookmarkViewModel.removeBookmark(bookmark, changed -> {
         });
         close();
     }

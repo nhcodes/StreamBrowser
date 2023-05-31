@@ -34,37 +34,15 @@ public class HistoryViewModel extends AndroidViewModel {
     }
 
     public void getHistory(String streamUrl, Consumer<List<Stream>> callback) {
-        Async.execute(
-                () -> historyDao.getByUrl(streamUrl),
-                (history) -> callback.accept(history)
-        );
+        Async.execute(() -> historyDao.getByUrl(streamUrl), callback);
     }
 
-    public void addHistory(Stream stream, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> historyDao.insert(stream),
-                (row) -> callback.accept(row != -1)
-        );
+    public void addHistory(Stream stream, Consumer<Long> callback) {
+        Async.execute(() -> historyDao.insert(stream), callback);
     }
 
-    public void updateHistory(Stream stream, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> historyDao.update(stream),
-                (changed) -> callback.accept(changed > 0)
-        );
+    public void clearHistory(Consumer<Integer> callback) {
+        Async.execute(() -> historyDao.deleteAll(), callback);
     }
 
-    public void removeHistory(Stream stream, Consumer<Boolean> callback) {
-        Async.execute(
-                () -> historyDao.delete(stream),
-                (changed) -> callback.accept(changed > 0)
-        );
-    }
-
-    public void clearHistory(Consumer<Boolean> callback) {
-        Async.execute(
-                () -> historyDao.deleteAll(),
-                (changed) -> callback.accept(changed > 0)
-        );
-    }
 }
