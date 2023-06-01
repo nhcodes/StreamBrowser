@@ -5,6 +5,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.MutableLiveData;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
@@ -12,6 +13,7 @@ import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 
+import codes.nh.webvideobrowser.screens.settings.SettingsManager;
 import codes.nh.webvideobrowser.screens.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
@@ -39,7 +41,14 @@ public class PlayerViewModel extends AndroidViewModel {
         DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(context);
         mediaSourceFactory.setDataSourceFactory(httpDataSourceFactory);
 
-        player = new ExoPlayer.Builder(context).setMediaSourceFactory(mediaSourceFactory).build();
+        SettingsManager settingsManager = new SettingsManager(context);
+        long skipTime = settingsManager.getSkipTime() * 1000L;
+
+        player = new ExoPlayer.Builder(context)
+                .setSeekForwardIncrementMs(skipTime)
+                .setSeekBackIncrementMs(skipTime)
+                .setMediaSourceFactory(mediaSourceFactory)
+                .build();
 
         MediaItem mediaItem = stream.createMediaItem();
         player.setMediaItem(mediaItem);
