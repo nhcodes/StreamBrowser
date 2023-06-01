@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         streamViewModel.getStreamRequest().observe(this, streamRequest -> {
             if (streamRequest != null) {
                 AppUtils.log("getStreamRequest");
-                playStream(streamRequest.getStream());
+                startStream(streamRequest.getStream());
                 streamViewModel.play(null);
             }
         });
@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
 
     //stream
 
+    /*
     public void playStream(Stream stream) {
         historyViewModel.getHistory(stream.getStreamUrl(), historyList -> {
 
@@ -291,7 +292,9 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+    */
 
+    /*
     private void openStreamResumeDialog(Stream stream) {
         String time = AppUtils.millisToMinutesSeconds(stream.getStartTime());
         new MaterialAlertDialogBuilder(this)
@@ -312,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .show();
     }
+    */
 
     private void startStream(Stream stream) {
         castViewModel.getCastManager().requestStream(MainActivity.this, stream);
@@ -346,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //try streaming through proxy
                 stream.setUseProxy(true);
-                playStream(stream);
+                startStream(stream);
 
                 return;
             }

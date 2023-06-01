@@ -14,10 +14,13 @@ import androidx.media3.ui.PlayerView;
 import org.json.JSONObject;
 
 import codes.nh.webvideobrowser.R;
+import codes.nh.webvideobrowser.screens.history.HistoryViewModel;
 import codes.nh.webvideobrowser.screens.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class PlayerActivity extends AppCompatActivity {
+
+    private HistoryViewModel historyViewModel;
 
     private PlayerViewModel playerViewModel;
 
@@ -33,7 +36,14 @@ public class PlayerActivity extends AppCompatActivity {
 
         AppUtils.log("onCreate PlayerActivity");
 
+        historyViewModel = new ViewModelProvider(this).get(HistoryViewModel.class);
+
         playerViewModel = new ViewModelProvider(this).get(PlayerViewModel.class);
+        playerViewModel.getPositionState().observe(this, position -> {
+            stream.setStartTime(position);
+            historyViewModel.addHistory(stream, rowId -> {
+            });
+        });
 
         try {
             stream = Stream.fromJson(new JSONObject(getIntent().getStringExtra("stream")));
@@ -43,6 +53,9 @@ public class PlayerActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        historyViewModel.addHistory(stream, rowId -> {
+        });
 
         video = findViewById(R.id.activity_player_video);
         video.setKeepScreenOn(true);

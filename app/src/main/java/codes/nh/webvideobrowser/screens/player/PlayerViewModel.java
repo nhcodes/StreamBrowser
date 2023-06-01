@@ -26,12 +26,6 @@ public class PlayerViewModel extends AndroidViewModel {
 
     private Player player;
 
-    private boolean playWhenReady = true;
-
-    private Integer index;
-
-    private Long position;
-
     public Player start(Stream stream) { //todo
         Context context = getApplication().getApplicationContext();
 
@@ -52,23 +46,27 @@ public class PlayerViewModel extends AndroidViewModel {
 
         MediaItem mediaItem = stream.createMediaItem();
         player.setMediaItem(mediaItem);
-
-        player.setPlayWhenReady(playWhenReady);
-        if (index != null && position != null) { //todo what if stream changes?
-            player.seekTo(index, position);
+        if (player.isCurrentMediaItemLive()) {
+            player.seekToDefaultPosition();
+        } else {
+            player.seekTo(stream.getStartTime());
         }
         player.addListener(playerListener);
+        player.setPlayWhenReady(true);
         player.prepare();
         return player;
     }
 
     public void stop() {
-        playWhenReady = player.getPlayWhenReady();
-        index = player.getCurrentMediaItemIndex();
-        position = player.getCurrentPosition();
         player.removeListener(playerListener);
         player.release();
         player = null;
+    }
+
+    private final MutableLiveData<Long> positionState = new MutableLiveData<>();
+
+    public MutableLiveData<Long> getPositionState() {
+        return positionState;
     }
 
     private final Player.Listener playerListener = new Player.Listener() {
@@ -90,11 +88,18 @@ public class PlayerViewModel extends AndroidViewModel {
         }*/
 
         @Override
+        public void onPlaybackStateChanged(int playbackState) {
+            Player.Listener.super.onPlaybackStateChanged(playbackState);
+            long position = player.isCurrentMediaItemLive() ? -1 : player.getCurrentPosition();
+            positionState.setValue(position);
+        }
+
+        @Override
         public void onPlayerError(PlaybackException error) {
             Player.Listener.super.onPlayerError(error);
-
             AppUtils.log("=============" + error.errorCode + "....." + error.getErrorCodeName() + "!!!!" + error.getMessage());
         }
+
     };
 
 }

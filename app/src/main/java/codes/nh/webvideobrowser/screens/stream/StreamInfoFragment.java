@@ -25,16 +25,17 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import codes.nh.webvideobrowser.screens.main.MainViewModel;
-import codes.nh.webvideobrowser.screens.player.PlayerViewModel;
 import codes.nh.webvideobrowser.R;
+import codes.nh.webvideobrowser.screens.history.HistoryViewModel;
+import codes.nh.webvideobrowser.screens.main.MainViewModel;
+import codes.nh.webvideobrowser.screens.main.SnackbarRequest;
 import codes.nh.webvideobrowser.screens.player.PlayerActivity;
+import codes.nh.webvideobrowser.screens.player.PlayerViewModel;
 import codes.nh.webvideobrowser.screens.sheet.SheetFragment;
 import codes.nh.webvideobrowser.screens.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
-import codes.nh.webvideobrowser.utils.async.Async;
-import codes.nh.webvideobrowser.screens.main.SnackbarRequest;
 import codes.nh.webvideobrowser.utils.UrlUtils;
+import codes.nh.webvideobrowser.utils.async.Async;
 
 public class StreamInfoFragment extends SheetFragment {
 
@@ -42,6 +43,8 @@ public class StreamInfoFragment extends SheetFragment {
         super(R.layout.fragment_stream_info, R.string.fragment_stream_info_title, true);
         AppUtils.log("init StreamInfoFragment");
     }
+
+    private HistoryViewModel historyViewModel;
 
     private MainViewModel mainViewModel;
 
@@ -57,6 +60,8 @@ public class StreamInfoFragment extends SheetFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        historyViewModel = new ViewModelProvider(requireActivity()).get(HistoryViewModel.class);
+
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
 
         playerViewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
@@ -64,6 +69,14 @@ public class StreamInfoFragment extends SheetFragment {
         streamViewModel = new ViewModelProvider(requireActivity()).get(StreamViewModel.class);
 
         stream = streamViewModel.getInfoStream();
+
+        historyViewModel.getHistory(stream.getStreamUrl(), historyList -> {
+            if (historyList.isEmpty()) {
+                return;
+            }
+            Stream history = historyList.get(0);
+            stream.setStartTime(history.getStartTime());
+        });
 
         video = view.findViewById(R.id.fragment_stream_info_video);
         video.setShowBuffering(PlayerView.SHOW_BUFFERING_ALWAYS);
@@ -146,7 +159,7 @@ public class StreamInfoFragment extends SheetFragment {
                         AppUtils.log("success=" + success + ", cors=" + cors);
 
 
-                        if(!UrlUtils.getFileNameFromUrl(url).contains(".m3u8")) {
+                        if (!UrlUtils.getFileNameFromUrl(url).contains(".m3u8")) {
                             return new ArrayList<Variant>();
                         }
 
