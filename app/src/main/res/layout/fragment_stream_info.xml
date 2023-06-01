@@ -9,6 +9,7 @@
         android:id="@+id/fragment_stream_info_actionbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:elevation="0dp"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/actions_stream" />
 
