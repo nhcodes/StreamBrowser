@@ -38,8 +38,6 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-splashscreen:1.0.1"
-
     implementation "androidx.preference:preference:1.2.0"
 
     implementation "androidx.room:room-runtime:2.5.1"

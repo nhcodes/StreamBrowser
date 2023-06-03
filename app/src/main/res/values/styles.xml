@@ -1,12 +1,5 @@
 <resources>
 
-    <style name="AppTheme.Splash" parent="Theme.SplashScreen">
-        <item name="postSplashScreenTheme">@style/AppTheme</item>
-        <item name="windowSplashScreenBackground">?attr/colorSurface</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_foreground</item>
-        <!--<item name="windowSplashScreenAnimationDuration">200</item>-->
-    </style>
-
     <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
 
         <item name="android:statusBarColor">?android:colorBackground</item>
