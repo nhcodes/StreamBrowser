@@ -17,9 +17,9 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import codes.nh.webvideobrowser.screens.main.MainViewModel;
 import codes.nh.webvideobrowser.R;
 import codes.nh.webvideobrowser.screens.browser.BrowserViewModel;
+import codes.nh.webvideobrowser.screens.main.MainViewModel;
 import codes.nh.webvideobrowser.screens.sheet.SheetFragment;
 import codes.nh.webvideobrowser.screens.sheet.SheetRequest;
 import codes.nh.webvideobrowser.utils.AppUtils;
@@ -116,7 +116,8 @@ public class StreamsFragment extends SheetFragment {
                 0L
         );
         stream.setUseProxy(true);
-        streamViewModel.play(new StreamRequest(stream));
+        //streamViewModel.play(new StreamRequest(stream));
+        openInfoFragment(stream);
     }
 
 }
