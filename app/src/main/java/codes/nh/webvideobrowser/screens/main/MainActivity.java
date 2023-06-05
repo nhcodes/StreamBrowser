@@ -41,36 +41,6 @@ import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    /* TODO LIST
-
-    https://developer.android.com/guide/navigation/navigation-getting-started
-
-    https://developer.android.com/guide/topics/media/exoplayer/downloading-media
-
-    https://developers.google.com/cast/docs/reference/web_receiver
-
-    name castmaster
-
-    implement all dialogs
-
-    only view stuff and click listeners in fragments & activity
-
-    make sure wifi is on
-
-    improve hls variants
-
-    implement cast devices
-
-    fix viewmodel saved values, on rotate they get triggered (observed) again
-
-    fragment listeners all one liner, move logic out
-
-    //SSLServerSocketFactory.getDefault().createServerSocket(1111).
-
-    cleanup hls proxy (make proxy & hls standalone?)
-
-    */
-
     private BrowserViewModel browserViewModel;
 
     private HistoryViewModel historyViewModel;
