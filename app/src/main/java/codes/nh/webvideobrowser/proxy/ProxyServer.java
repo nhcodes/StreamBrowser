@@ -37,16 +37,6 @@ public class ProxyServer extends HttpServer {
         this.ip = loadLocalIp();
     }
 
-    public void startProxy() {
-        ProxyService.start(context);
-        start();
-    }
-
-    public void stopProxy() {
-        stop();
-        ProxyService.stop(context);
-    }
-
     private String loadLocalIp() {
         List<String> ips = new ArrayList<>();
 
@@ -185,7 +175,7 @@ public class ProxyServer extends HttpServer {
 
     //encode / decode
 
-    public String getEncodedQuery(String url, Map<String, String> headers) {
+    private String getEncodedQuery(String url, Map<String, String> headers) {
         try {
             JSONObject castStreamInfoJson = new JSONObject();
             castStreamInfoJson.put("u", url);
@@ -198,7 +188,7 @@ public class ProxyServer extends HttpServer {
         return null;
     }
 
-    public Pair<String, Map<String, String>> getDecodedQuery(String query) {
+    private Pair<String, Map<String, String>> getDecodedQuery(String query) {
         try {
             String queryDecoded = decodeBase64(query.replace("?q=", ""));
             JSONObject castStreamInfoJson = new JSONObject(queryDecoded);

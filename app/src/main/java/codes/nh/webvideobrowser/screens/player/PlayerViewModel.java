@@ -44,7 +44,7 @@ public class PlayerViewModel extends AndroidViewModel {
                 .setMediaSourceFactory(mediaSourceFactory)
                 .build();
 
-        MediaItem mediaItem = stream.createMediaItem();
+        MediaItem mediaItem = stream.createMediaItem(stream.getStreamUrl()); //todo proxy url
         player.setMediaItem(mediaItem);
         if (player.isCurrentMediaItemLive()) {
             player.seekToDefaultPosition();

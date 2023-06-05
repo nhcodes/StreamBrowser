@@ -96,7 +96,7 @@ public class Stream {
         this.useProxy = useProxy;
     }
 
-    public MediaLoadRequestData createMediaLoadRequestData(String proxyUrl) {
+    public MediaLoadRequestData createMediaLoadRequestData(String contentUrl) {
         MediaMetadata metadata = new MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE);
         metadata.putString(MediaMetadata.KEY_TITLE, title);
         metadata.putString(MediaMetadata.KEY_SUBTITLE, sourceUrl.replaceFirst("https?://", ""));
@@ -119,7 +119,7 @@ public class Stream {
             i++;
         }
 
-        MediaInfo mediaInfo = new MediaInfo.Builder(proxyUrl)
+        MediaInfo mediaInfo = new MediaInfo.Builder(contentUrl)
                 .setMetadata(metadata)
                 .setMediaTracks(subtitles)
                 .setCustomData(toJson())
@@ -131,7 +131,7 @@ public class Stream {
                 .build();
     }
 
-    public MediaItem createMediaItem() {
+    public MediaItem createMediaItem(String contentUrl) {
         androidx.media3.common.MediaMetadata metadata = new androidx.media3.common.MediaMetadata.Builder()
                 .setTitle(title)
                 .setSubtitle(sourceUrl.replaceFirst("https?://", ""))
@@ -152,7 +152,7 @@ public class Stream {
         }
 
         return new MediaItem.Builder()
-                .setUri(streamUrl)
+                .setUri(contentUrl)
                 .setMediaMetadata(metadata)
                 .setSubtitleConfigurations(subtitles)
                 .build();

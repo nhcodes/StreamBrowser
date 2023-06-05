@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
     */
 
     private void startStream(Stream stream) {
-        castViewModel.getCastManager().requestStream(MainActivity.this, stream);
+        castViewModel.getCastManager().requestStream(this, stream);
     }
 
     private final CastManager.Listener castListener = new CastManager.Listener() {

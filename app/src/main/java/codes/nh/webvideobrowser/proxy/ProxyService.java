@@ -5,41 +5,33 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.os.Binder;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-import codes.nh.webvideobrowser.screens.main.MainActivity;
 import codes.nh.webvideobrowser.R;
+import codes.nh.webvideobrowser.screens.main.MainActivity;
 import codes.nh.webvideobrowser.utils.AppUtils;
 
 public class ProxyService extends Service {
 
-    public static void start(Context context) {
-        AppUtils.log("ProxyService.start");
-        Intent intent = new Intent(context, ProxyService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
-    }
+    private final int proxyPort = 1111;
 
-    public static void stop(Context context) {
-        AppUtils.log("ProxyService.stop");
-        Intent intent = new Intent(context, ProxyService.class);
-        context.stopService(intent);
-    }
+    private ProxyServer proxyServer;
 
-    //
+    public ProxyServer getProxyServer() {
+        return proxyServer;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         AppUtils.log("ProxyService onCreate");
+
+        proxyServer = new ProxyServer(getApplicationContext(), proxyPort);
+        proxyServer.start();
 
         initNotificationManager();
     }
@@ -50,8 +42,7 @@ public class ProxyService extends Service {
         AppUtils.log("ProxyService onStartCommand");
 
         if (notification == null) {
-            String notificationText = getNotificationText(/*System.currentTimeMillis()*/);
-            notification = createNotification(notificationText);
+            notification = createNotification();
         }
 
         startForeground(NOTIFICATION_ID, notification);
@@ -62,13 +53,24 @@ public class ProxyService extends Service {
     @Override
     public void onDestroy() {
         AppUtils.log("ProxyService onDestroy");
+        proxyServer.stop();
         super.onDestroy();
     }
+
+    //binder
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
+    }
+
+    private final IBinder binder = new LocalBinder();
+
+    public class LocalBinder extends Binder {
+        public ProxyService getService() {
+            return ProxyService.this;
+        }
     }
 
     //notification
@@ -88,22 +90,19 @@ public class ProxyService extends Service {
         }
     }
 
-    private String getNotificationText(/*long lastUpdate*/) {
-        //String localAddress = proxyServer.getLocalAddress();
-        String notificationText = "Proxy running";// @ :" + localAddress + " | "
-                //+ "Last update: " + AppUtils.getTimeStringFromTimestamp(lastUpdate);
-        return notificationText;
-    }
-
-    private Notification createNotification(String notificationText) {
+    private Notification createNotification() {
         Intent startMainActivityIntent = new Intent(getApplicationContext(), MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, startMainActivityIntent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+
+        String httpAddress = proxyServer.getHttpAddress();
+        String notificationText = "Proxy running @ " + httpAddress;
 
         Notification.Builder notificationBuilder = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(notificationText)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.logo_icon);
+                .setSmallIcon(R.drawable.logo_icon)
+                .setOngoing(true);
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notificationBuilder.setChannelId(CHANNEL_ID);
@@ -111,4 +110,5 @@ public class ProxyService extends Service {
 
         return notificationBuilder.build();
     }
+
 }

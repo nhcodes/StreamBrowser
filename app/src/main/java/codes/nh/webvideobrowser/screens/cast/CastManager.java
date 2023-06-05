@@ -2,6 +2,7 @@ package codes.nh.webvideobrowser.screens.cast;
 
 import static com.google.android.gms.cast.MediaStatus.PLAYER_STATE_IDLE;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 
@@ -33,12 +34,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import codes.nh.webvideobrowser.R;
+import codes.nh.webvideobrowser.proxy.ProxyServiceConnector;
 import codes.nh.webvideobrowser.screens.stream.Stream;
-import codes.nh.webvideobrowser.proxy.ProxyServer;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.async.Async;
 
 public class CastManager {
+
+    private final Context context;
 
     private final CastContext castContext;
 
@@ -46,6 +49,7 @@ public class CastManager {
 
     public CastManager(Context context) {
         AppUtils.log("init CastManager");
+        this.context = context;
         this.castContext = CastContext.getSharedInstance(context);
                 /*.addOnSuccessListener(castContext -> {
                     AppUtils.log("init CastManager addOnSuccessListener");
@@ -55,7 +59,6 @@ public class CastManager {
                 .addOnFailureListener(e -> {
                     AppUtils.log("CastManager.getSharedInstance", e);
                 });*/
-        this.proxyServer = new ProxyServer(context, proxyPort);
     }
 
     private SessionManager getSessionManager() {
@@ -83,39 +86,42 @@ public class CastManager {
         return getCastSession().isMute();
     }
 
-    public void requestStream(Context context, Stream stream) {
+    public void requestStream(Activity activity, Stream stream) {
         listener.onPlaybackRequested(stream);
 
         if (!isConnected()) {
             streamQueue = stream;
-            showCastDevicesDialog(context);
+            showCastDevicesDialog(activity);
             return;
         }
 
-        String url = stream.getStreamUrl();
+        String contentUrl = stream.getStreamUrl();
 
         if (stream.useProxy()) {
+
             HashMap<String, String> newHeaders = new HashMap<>();
             newHeaders.put("Referer", stream.getHeaders().get("Referer"));
             newHeaders.put("Origin", stream.getHeaders().get("Origin"));
             AppUtils.log("stream headers: " + AppUtils.mapToJson(newHeaders));
-            String proxyUrl = proxyServer.convertToProxyUrl(url, newHeaders);
-            startProxyServer(() -> {
+
+            proxyServiceConnector.startProxyServer(context, proxyServer -> {
+                String proxyUrl = proxyServer.convertToProxyUrl(contentUrl, newHeaders);
                 Async.executeOnMainThread(() -> {
                     loadStream(proxyUrl, stream);
                 });
             });
+
         } else {
-            loadStream(url, stream);
+            loadStream(contentUrl, stream);
         }
 
     }
 
     private final int requestTimeoutSeconds = 10;
 
-    private void loadStream(String url, Stream stream) {
+    private void loadStream(String contentUrl, Stream stream) {
         getRemoteMediaClient()
-                .load(stream.createMediaLoadRequestData(url))
+                .load(stream.createMediaLoadRequestData(contentUrl))
                 .setResultCallback(getRequestCallback(stream), requestTimeoutSeconds, TimeUnit.SECONDS);
     }
 
@@ -154,23 +160,6 @@ public class CastManager {
         return mediaRouter.getRoutes().stream().filter(route -> route.matchesSelector(selector)).collect(Collectors.toList());
     }
 
-    // proxy
-
-    private final ProxyServer proxyServer;
-
-    private final int proxyPort = 1111;
-
-    private void startProxyServer(Runnable onStart) {
-        proxyServer.setStartListener(onStart);
-        /*proxyServer.setUpdateListener(() -> {});
-        proxyServer.setStopListener(() -> {});*/
-        proxyServer.startProxy();
-    }
-
-    private void stopProxyServer() {
-        proxyServer.stopProxy();
-    }
-
     //request callback
 
     private ResultCallback<RemoteMediaClient.MediaChannelResult> getRequestCallback(Stream stream) {
@@ -188,8 +177,6 @@ public class CastManager {
 
                 errorMessage += "status=" + mediaChannelResult.getStatus() + "\n";
 
-                //stopProxyServer(); todo probably already called in onStatusUpdated
-
                 AppUtils.log(errorMessage);
                 listener.onPlaybackStarted(stream, errorMessage);
                 return;
@@ -201,6 +188,10 @@ public class CastManager {
 
         };
     }
+
+    //proxy service
+
+    private final ProxyServiceConnector proxyServiceConnector = new ProxyServiceConnector();
 
     //session listener
 
@@ -222,17 +213,12 @@ public class CastManager {
             loadStream(streamQueue.getStreamUrl(), streamQueue);
             streamQueue = null;
         }
-
-        if (isPlaying()) {
-            startProxyServer(() -> {
-                AppUtils.log("session resumed and is playing -> started proxy server");
-            });
-        }
     }
 
     private void onSessionEnd(CastSession session) {
         stopPlaybackListener();
-        stopProxyServer();
+
+        //stopProxyServer(); check if already called in onStatusUpdated (IDLE)
     }
 
     private final SessionManagerListener<CastSession> sessionListener = new SessionManagerListener<>() {
@@ -330,12 +316,15 @@ public class CastManager {
                         "PLAYER_STATE_LOADING"
                 };
                 String stateDescription = states[stateId];
-                AppUtils.log("onStatusUpdated " + stateDescription);
+                AppUtils.log("onStatusUpdated " + stateDescription
+                        + ";;; " + remoteMediaClient.isPlaying()
+                        + ";;; " + remoteMediaClient.isLoadingNextItem()
+                        + ";;; " + remoteMediaClient.hasMediaSession());
 
                 listener.onPlaybackUpdate(remoteMediaClient, stateId);
 
                 if (stateId == PLAYER_STATE_IDLE) {
-                    stopProxyServer();
+                    proxyServiceConnector.stopProxyServer(context);
                 }
             }
 

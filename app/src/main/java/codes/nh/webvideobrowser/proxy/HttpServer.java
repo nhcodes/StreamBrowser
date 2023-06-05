@@ -30,17 +30,21 @@ public abstract class HttpServer {
         return port;
     }
 
+    public boolean isStarted() {
+        return serverSocket != null;
+    }
+
     public void start() {
-        if (serverSocket != null) {
+        if (isStarted()) {
             startListener.run();
             return;
         }
         AppUtils.log("starting server at port " + port);
-        new Thread(() -> handleServer()).start();
+        Async.execute(() -> handleServer());
     }
 
     public void stop() {
-        if (serverSocket == null) return;
+        if (!isStarted()) return;
         AppUtils.log("stopping server");
         try {
             serverSocket.close();
