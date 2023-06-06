@@ -38,7 +38,7 @@ public class ProxyServiceConnector {
         if (proxyServer != null) {
             callback.accept(proxyServer);
             return;
-        };
+        }
         this.callback = callback;
         startProxyService(context);
         bindToProxyService(context);

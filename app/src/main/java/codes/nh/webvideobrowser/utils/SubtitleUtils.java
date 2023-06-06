@@ -16,7 +16,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class SubtitleUtils {
 
-    public static Map<String, String> SUBTITLE_MIME_TYPES = Map.of(
+    public static final Map<String, String> SUBTITLE_MIME_TYPES = Map.of(
             "vtt", MimeTypes.TEXT_VTT,
             "srt", MimeTypes.APPLICATION_SUBRIP,
             "ttml", MimeTypes.APPLICATION_TTML,

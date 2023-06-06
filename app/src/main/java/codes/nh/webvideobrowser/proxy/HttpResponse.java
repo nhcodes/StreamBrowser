@@ -6,11 +6,11 @@ import java.util.Map;
 
 public class HttpResponse {
 
-    HttpStatus status;
+    final HttpStatus status;
 
-    InputStream content;
+    final InputStream content;
 
-    Map<String, String> headers;
+    final Map<String, String> headers;
 
     Integer length = null;
 
