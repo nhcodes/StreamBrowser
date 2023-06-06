@@ -11,7 +11,7 @@
             app:defaultValue="false"
             app:iconSpaceReserved="false"
             app:key="preference_desktop_mode"
-            app:summary="Show pc desktop version of website?"
+            app:summary="Display the desktop version of websites?"
             app:title="Desktop mode" />
 
         <SwitchPreference
@@ -35,14 +35,14 @@
             app:key="preference_skip_time"
             app:min="5"
             app:showSeekBarValue="true"
-            app:summary="How many seconds should be skipped forwards/backwards?"
-            app:title="Skip time" />
+            app:summary="Set the rewind and fast forward interval in seconds."
+            app:title="Rewind / Forward interval" />
 
         <SwitchPreference
             app:defaultValue="true"
             app:iconSpaceReserved="false"
             app:key="preference_use_proxy"
-            app:summary="Try streaming through the phone if the stream doesn't support casting."
+            app:summary="Try streaming through the phone if the stream doesn't support casting directly."
             app:title="Cast through proxy" />
 
     </PreferenceCategory>
