@@ -358,6 +358,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /*
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) { //clear edittext focus on click outside
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -372,6 +373,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(event);
-    }
+    }*/
 
 }
