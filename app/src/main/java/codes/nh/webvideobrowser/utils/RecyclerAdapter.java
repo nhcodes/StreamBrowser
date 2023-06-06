@@ -30,19 +30,11 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVi
 
         View rootView = viewHolder.itemView;
 
-        rootView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.onClick(element);
-            }
-        });
+        rootView.setOnClickListener(view -> listener.onClick(element));
 
-        rootView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                listener.onLongClick(element);
-                return true;
-            }
+        rootView.setOnLongClickListener(view -> {
+            listener.onLongClick(element);
+            return true;
         });
 
         onCreateView(viewHolder, element);

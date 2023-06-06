@@ -1,15 +1,10 @@
 package codes.nh.webvideobrowser.screens.main;
 
 import android.content.res.ColorStateList;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -18,7 +13,6 @@ import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.color.MaterialColors;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.snackbar.Snackbar;
 
 import codes.nh.webvideobrowser.R;
@@ -131,12 +125,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         streamsButton = findViewById(R.id.activity_main_button_streams);
-        streamsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SheetRequest request = new SheetRequest(StreamsFragment.class);
-                mainViewModel.openSheet(request);
-            }
+        streamsButton.setOnClickListener(view -> {
+            SheetRequest request = new SheetRequest(StreamsFragment.class);
+            mainViewModel.openSheet(request);
         });
 
         /*miniControllerFragment = findViewById(R.id.activity_main_fragment_minicontroller);
@@ -154,25 +145,22 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.activity_main_navigation_bottom);
         clearNavigationSelection();
-        bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                SheetRequest request;
-                if (id == R.id.action_navigation_bookmarks) {
-                    request = new SheetRequest(BookmarksFragment.class);
-                } else if (id == R.id.action_navigation_history) {
-                    request = new SheetRequest(HistoryFragment.class);
-                } else if (id == R.id.action_navigation_help) {
-                    request = new SheetRequest(HelpFragment.class);
-                } else if (id == R.id.action_navigation_settings) {
-                    request = new SheetRequest(SettingsFragment.class);
-                } else {
-                    return false;
-                }
-                mainViewModel.openSheet(request);
-                return true;
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            SheetRequest request;
+            if (id == R.id.action_navigation_bookmarks) {
+                request = new SheetRequest(BookmarksFragment.class);
+            } else if (id == R.id.action_navigation_history) {
+                request = new SheetRequest(HistoryFragment.class);
+            } else if (id == R.id.action_navigation_help) {
+                request = new SheetRequest(HelpFragment.class);
+            } else if (id == R.id.action_navigation_settings) {
+                request = new SheetRequest(SettingsFragment.class);
+            } else {
+                return false;
             }
+            mainViewModel.openSheet(request);
+            return true;
         });
 
         getOnBackPressedDispatcher().addCallback(backPressedCallback);

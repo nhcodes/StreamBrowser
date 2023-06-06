@@ -76,20 +76,10 @@ public class CastUiController extends UIMediaController {
     }
 
     public void bindViewToStopButton(View view) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onStopClicked(view);
-            }
-        });
+        view.setOnClickListener(v -> onStopClicked(v));
     }
 
     public void bindViewToDisconnectButton(View view) {
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onDisconnectClicked(view);
-            }
-        });
+        view.setOnClickListener(v -> onDisconnectClicked(v));
     }
 }
