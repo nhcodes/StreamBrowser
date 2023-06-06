@@ -20,12 +20,12 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 
-import codes.nh.webvideobrowser.screens.main.MainViewModel;
 import codes.nh.webvideobrowser.R;
+import codes.nh.webvideobrowser.screens.main.MainViewModel;
+import codes.nh.webvideobrowser.screens.main.SnackbarRequest;
 import codes.nh.webvideobrowser.screens.stream.Stream;
 import codes.nh.webvideobrowser.utils.AppUtils;
 import codes.nh.webvideobrowser.utils.ImageUtils;
-import codes.nh.webvideobrowser.screens.main.SnackbarRequest;
 import codes.nh.webvideobrowser.utils.UrlUtils;
 
 public class BrowserFragment extends Fragment {
@@ -228,7 +228,9 @@ public class BrowserFragment extends Fragment {
 
         int i = 0;
         for (BrowserDestination destination : destinations) {
-            menu.add(Menu.NONE, i, i, destination.getTitle());
+            String domainName = UrlUtils.getDomainNameFromURL(destination.getUrl());
+            String text = domainName + " | " + destination.getTitle();
+            menu.add(Menu.NONE, i, i, text);
             i++;
         }
 
