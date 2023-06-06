@@ -4,12 +4,12 @@ plugins {
 
 android {
 
-    namespace "codes.nh.webvideobrowser"
+    namespace "codes.nh.streambrowser"
 
     compileSdk 33
 
     defaultConfig {
-        applicationId "codes.nh.webvideobrowser"
+        applicationId "codes.nh.streambrowser"
         minSdk 24
         targetSdk 33
         versionCode 1

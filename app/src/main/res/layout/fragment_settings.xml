@@ -5,7 +5,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_settings_container_preferences"
-        android:name="codes.nh.webvideobrowser.screens.settings.PreferenceFragment"
+        android:name="codes.nh.streambrowser.screens.settings.PreferenceFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

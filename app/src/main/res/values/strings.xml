@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WebVideoBrowser</string>
+    <string name="app_name">StreamBrowser</string>
     <string name="cast_receiver_application_id">D1CAAFD8</string>
 
     <string name="snackbar_redirect_message">Redirect to %s?</string>

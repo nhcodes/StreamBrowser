@@ -19,7 +19,7 @@
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/activity_main_container_browser"
-                android:name="codes.nh.webvideobrowser.screens.browser.BrowserFragment"
+                android:name="codes.nh.streambrowser.screens.browser.BrowserFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_browser" />
@@ -27,7 +27,7 @@
             <!--
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/activity_main_fragment_minicontroller"
-                android:name="codes.nh.webvideobrowser.screens.cast.CastMiniControllerFragment"
+                android:name="codes.nh.streambrowser.screens.cast.CastMiniControllerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -35,7 +35,7 @@
             -->
             <fragment
                 android:id="@+id/activity_main_fragment_minicontroller"
-                class="codes.nh.webvideobrowser.screens.cast.CastMiniControllerFragment"
+                class="codes.nh.streambrowser.screens.cast.CastMiniControllerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
