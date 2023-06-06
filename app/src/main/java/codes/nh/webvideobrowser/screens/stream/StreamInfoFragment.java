@@ -175,7 +175,15 @@ public class StreamInfoFragment extends SheetFragment {
                 },
                 hlsVariants -> {
                     if (!hlsVariants.isEmpty()) {
+
+                        Variant adaptiveVariant = new Variant();
+                        adaptiveVariant.url = url;
+                        adaptiveVariant.resolution = "ADAPTIVE";
+                        adaptiveVariant.info = "";
+                        hlsVariants.add(0, adaptiveVariant);
+
                         openHlsVariantChooserDialog(hlsVariants, variant -> {
+                            if(variant.resolution.equals("ADAPTIVE")) return;
                             Stream variantStream = new Stream(
                                     variant.url,
                                     stream.getSourceUrl(),
@@ -188,6 +196,7 @@ public class StreamInfoFragment extends SheetFragment {
                             streamViewModel.setInfoStream(variantStream);
                             mainViewModel.openSheet(new SheetRequest(StreamInfoFragment.class));
                         });
+
                     }
                 }, 5000L);
     }
