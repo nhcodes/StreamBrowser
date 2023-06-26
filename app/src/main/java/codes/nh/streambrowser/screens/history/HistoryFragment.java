@@ -38,6 +38,8 @@ public class HistoryFragment extends SheetFragment {
 
     private StreamViewModel streamViewModel;
 
+    private RecyclerView listView;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -49,6 +51,7 @@ public class HistoryFragment extends SheetFragment {
         historyViewModel = new ViewModelProvider(requireActivity()).get(HistoryViewModel.class);
         historyViewModel.getHistoryList().observe(getViewLifecycleOwner(), streams -> {
             historyAdapter.set(streams);
+            listView.smoothScrollToPosition(Integer.MAX_VALUE);
         });
 
         mainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
@@ -62,7 +65,7 @@ public class HistoryFragment extends SheetFragment {
         layoutManager.setStackFromEnd(true);
         layoutManager.setReverseLayout(true);
 
-        RecyclerView listView = view.findViewById(R.id.fragment_history_list);
+        listView = view.findViewById(R.id.fragment_history_list);
         listView.setAdapter(historyAdapter);
         listView.setLayoutManager(layoutManager);
 
