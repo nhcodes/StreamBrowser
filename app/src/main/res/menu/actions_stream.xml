@@ -3,6 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_stream_resolutions"
+        android:icon="@drawable/icon_resolutions"
+        android:title="@string/fragment_stream_info_action_resolutions"
+        android:visible="false"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_stream_share"
         android:icon="@drawable/icon_share"
         android:title="@string/fragment_stream_info_action_share"
@@ -25,9 +32,5 @@
         android:icon="@drawable/icon_play"
         android:title="@string/fragment_stream_info_action_play"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_none"
-        android:visible="false" />
 
 </menu>

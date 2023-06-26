@@ -2,7 +2,9 @@ package codes.nh.streambrowser.screens.stream;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
+import android.widget.PopupMenu;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,7 +13,6 @@ import androidx.media3.common.Player;
 import androidx.media3.ui.PlayerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,6 +57,8 @@ public class StreamInfoFragment extends SheetFragment {
 
     private Stream stream;
 
+    private List<Variant> streamVariants = new ArrayList<>();
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -87,10 +90,14 @@ public class StreamInfoFragment extends SheetFragment {
         });
 
         BottomNavigationView actionbar = view.findViewById(R.id.fragment_stream_info_actionbar);
-        actionbar.setSelectedItemId(R.id.action_none);
+        actionbar.setSelectedItemId(R.id.action_stream_play); //todo
         actionbar.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.action_stream_share) {
+            if (id == R.id.action_stream_resolutions) {
+                openVariantsPopup(actionbar, streamVariants, variant -> {
+                    openVariantStream(stream, variant);
+                });
+            } else if (id == R.id.action_stream_share) {
                 share(stream);
             } else if (id == R.id.action_stream_download) {
                 download(stream);
@@ -102,7 +109,11 @@ public class StreamInfoFragment extends SheetFragment {
             return false;
         });
 
-        checkStreamVariants(stream.getStreamUrl(), stream.getHeaders());
+        checkStreamVariants(stream.getStreamUrl(), stream.getHeaders(), variants -> {
+            streamVariants = variants;
+            boolean visible = !streamVariants.isEmpty();
+            actionbar.getMenu().findItem(R.id.action_stream_resolutions).setVisible(visible);
+        });
     }
 
     @Override
@@ -118,6 +129,20 @@ public class StreamInfoFragment extends SheetFragment {
         super.onStop();
 
         playerViewModel.stop();
+    }
+
+    private void openVariantStream(Stream stream, Variant variant) {
+        Stream variantStream = new Stream(
+                variant.url,
+                stream.getSourceUrl(),
+                stream.getTitle(),
+                stream.getHeaders(),
+                stream.getThumbnailUrls(),
+                stream.getSubtitleUrls(),
+                stream.getStartTime()
+        );
+        streamViewModel.setInfoStream(variantStream);
+        mainViewModel.openSheet(new SheetRequest(StreamInfoFragment.class));
     }
 
     private void share(Stream stream) {
@@ -146,7 +171,11 @@ public class StreamInfoFragment extends SheetFragment {
 
     //hls playlist variants
 
-    private void checkStreamVariants(String url, Map<String, String> headers) {
+    private static class Variant {
+        String url, info, resolution;
+    }
+
+    private void checkStreamVariants(String url, Map<String, String> headers, Consumer<List<Variant>> callback) {
         Async.execute(
                 () -> {
                     try {
@@ -157,7 +186,6 @@ public class StreamInfoFragment extends SheetFragment {
                         String corsHeader = connection.getHeaderField("Access-Control-Allow-Origin");
                         boolean cors = corsHeader != null && corsHeader.contains("*");
                         AppUtils.log("success=" + success + ", cors=" + cors);
-
 
                         if (!UrlUtils.getFileNameFromUrl(url).contains(".m3u8")) {
                             return new ArrayList<Variant>();
@@ -174,46 +202,10 @@ public class StreamInfoFragment extends SheetFragment {
                     }
                 },
                 hlsVariants -> {
-                    if (!hlsVariants.isEmpty()) {
-
-                        Variant adaptiveVariant = new Variant();
-                        adaptiveVariant.url = url;
-                        adaptiveVariant.resolution = "ADAPTIVE";
-                        adaptiveVariant.info = "";
-                        hlsVariants.add(0, adaptiveVariant);
-
-                        openHlsVariantChooserDialog(hlsVariants, variant -> {
-                            if (variant.resolution.equals("ADAPTIVE")) return;
-                            Stream variantStream = new Stream(
-                                    variant.url,
-                                    stream.getSourceUrl(),
-                                    stream.getTitle(),
-                                    stream.getHeaders(),
-                                    stream.getThumbnailUrls(),
-                                    stream.getSubtitleUrls(),
-                                    stream.getStartTime()
-                            );
-                            streamViewModel.setInfoStream(variantStream);
-                            mainViewModel.openSheet(new SheetRequest(StreamInfoFragment.class));
-                        });
-
-                    }
-                }, 5000L);
-    }
-
-
-    private void openHlsVariantChooserDialog(List<Variant> variants, Consumer<Variant> onChoose) {
-        CharSequence[] items = variants.stream().map(variant ->
-                variant.resolution + "\n" + variant.info
-        ).toArray(CharSequence[]::new);
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Choose stream")
-                .setItems(items, (dialog, index) -> {
-                    Variant variant = variants.get(index);
-                    onChoose.accept(variant);
-                    dialog.dismiss();
-                })
-                .show();
+                    callback.accept(hlsVariants);
+                },
+                5000L
+        );
     }
 
     //https://developer.apple.com/documentation/http-live-streaming/creating-a-multivariant-playlist
@@ -266,8 +258,24 @@ public class StreamInfoFragment extends SheetFragment {
         return variants;
     }
 
-    private static class Variant {
-        String url, info, resolution;
+    private void openVariantsPopup(View view, List<Variant> variants, Consumer<Variant> onSelect) {
+        PopupMenu popup = new PopupMenu(view.getContext(), view);
+        Menu menu = popup.getMenu();
+
+        int i = 0;
+        for (Variant variant : variants) {
+            String title = variant.resolution;// + " - " + variant.info;
+            menu.add(Menu.NONE, i, i, title);
+            i++;
+        }
+
+        popup.setOnMenuItemClickListener(item -> {
+            Variant selectedVariant = variants.get(item.getItemId());
+            onSelect.accept(selectedVariant);
+            return true;
+        });
+
+        popup.show();
     }
 
 }

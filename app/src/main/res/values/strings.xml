@@ -50,6 +50,7 @@
     <string name="fragment_stream_info_video_error">Error while loading video, try again.</string>
     <string name="fragment_stream_info_use_proxy">Stream using proxy</string>
 
+    <string name="fragment_stream_info_action_resolutions">Resolutions</string>
     <string name="fragment_stream_info_action_share">Share</string>
     <string name="fragment_stream_info_action_download">Download</string>
     <string name="fragment_stream_info_action_cast">Cast</string>
