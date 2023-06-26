@@ -218,7 +218,7 @@ public class CastManager {
     private void onSessionEnd(CastSession session) {
         stopPlaybackListener();
 
-        //stopProxyServer(); check if already called in onStatusUpdated (IDLE)
+        proxyServiceConnector.stopProxyServer(context);
     }
 
     private final SessionManagerListener<CastSession> sessionListener = new SessionManagerListener<>() {
@@ -316,10 +316,7 @@ public class CastManager {
                         "PLAYER_STATE_LOADING"
                 };
                 String stateDescription = states[stateId];
-                AppUtils.log("onStatusUpdated " + stateDescription
-                        + ";;; " + remoteMediaClient.isPlaying()
-                        + ";;; " + remoteMediaClient.isLoadingNextItem()
-                        + ";;; " + remoteMediaClient.hasMediaSession());
+                AppUtils.log("onStatusUpdated " + stateDescription);
 
                 listener.onPlaybackUpdate(remoteMediaClient, stateId);
 
