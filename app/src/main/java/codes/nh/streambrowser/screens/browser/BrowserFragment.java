@@ -201,9 +201,9 @@ public class BrowserFragment extends Fragment {
     private void openUrl(String query) {
         if (!query.startsWith("https://") && !query.startsWith("http://")) {
             if (query.contains(" ") || !query.contains(".")) {
-                query = "http://google.com/search?q=" + query.replace(" ", "+");
+                query = "https://google.com/search?q=" + query.replace(" ", "+");
             } else {
-                query = "http://" + query;
+                query = "https://" + query;
             }
         }
         urlInput.clearFocus();
