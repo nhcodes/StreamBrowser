@@ -44,7 +44,7 @@ public class MainViewModel extends AndroidViewModel {
         } else {
             sheetStack.remove(0);
             SheetRequest lastSheet = sheetStack.get(0);
-            openSheet(lastSheet);
+            currentSheet.setValue(lastSheet);
         }
     }
 
