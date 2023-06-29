@@ -90,7 +90,8 @@ public class StreamInfoFragment extends SheetFragment {
         });
 
         BottomNavigationView actionbar = view.findViewById(R.id.fragment_stream_info_actionbar);
-        actionbar.setSelectedItemId(R.id.action_stream_play); //todo
+        //actionbar.setSelectedItemId(R.id.action_stream_play); //todo
+        actionbar.setSelectedItemId(R.id.action_stream_none);
         actionbar.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.action_stream_resolutions) {
@@ -99,8 +100,8 @@ public class StreamInfoFragment extends SheetFragment {
                 });
             } else if (id == R.id.action_stream_share) {
                 share(stream);
-            } else if (id == R.id.action_stream_download) {
-                download(stream);
+            /*} else if (id == R.id.action_stream_download) {
+                download(stream);*/
             } else if (id == R.id.action_stream_cast) {
                 cast(stream);
             } else if (id == R.id.action_stream_play) {

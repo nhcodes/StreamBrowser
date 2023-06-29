@@ -15,11 +15,12 @@
         android:title="@string/fragment_stream_info_action_share"
         app:showAsAction="always" />
 
+    <!--
     <item
         android:id="@+id/action_stream_download"
         android:icon="@drawable/icon_download"
         android:title="@string/fragment_stream_info_action_download"
-        app:showAsAction="always" />
+        app:showAsAction="always" />-->
 
     <item
         android:id="@+id/action_stream_cast"
@@ -32,5 +33,9 @@
         android:icon="@drawable/icon_play"
         android:title="@string/fragment_stream_info_action_play"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_stream_none"
+        android:visible="false" />
 
 </menu>
