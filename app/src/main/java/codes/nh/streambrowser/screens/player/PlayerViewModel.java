@@ -58,6 +58,7 @@ public class PlayerViewModel extends AndroidViewModel {
     }
 
     public void stop() {
+        player.pause();
         player.removeListener(playerListener);
         player.release();
         player = null;
