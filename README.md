@@ -30,3 +30,4 @@ Android browser app with automatic stream detection, an integrated video player 
 
 #### Preview
 
+https://github.com/nhcodes/StreamBrowser/assets/120429276/74639e75-e927-42e0-83ab-99d8fe9692df
