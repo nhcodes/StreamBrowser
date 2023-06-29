@@ -13,7 +13,7 @@ android {
         minSdk 24
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -26,6 +26,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.debug
         }
     }
 
@@ -40,8 +41,8 @@ dependencies {
 
     implementation "androidx.preference:preference:1.2.0"
 
-    implementation "androidx.room:room-runtime:2.5.1"
-    annotationProcessor "androidx.room:room-compiler:2.5.1"
+    implementation "androidx.room:room-runtime:2.5.2"
+    annotationProcessor "androidx.room:room-compiler:2.5.2"
 
     implementation "androidx.media3:media3-exoplayer:1.0.2"
     implementation "androidx.media3:media3-exoplayer-dash:1.0.2"
